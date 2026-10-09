@@ -6,6 +6,11 @@ import { Footer } from '@/components/Footer'
 import { siteConfig } from '@/config/site'
 import Script from 'next/script'
 
+// Next 14 静态页默认输出 s-maxage=31536000（一年），CDN 会长期缓存旧页面
+// 且部署后不自动失效；改为动态渲染让响应带 no-store，部署即刻生效。
+// 页面均为轻量静态组件，动态渲染开销可忽略。
+export const dynamic = 'force-dynamic'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
