@@ -22,6 +22,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { siteConfig } from '@/config/site'
+import { trackToolExport } from '@/lib/analytics'
 
 type ErrorLevel = 'L' | 'M' | 'Q' | 'H'
 
@@ -241,6 +242,7 @@ export default function QrCodePage() {
     link.download = `qrcode-${size}px-${Date.now()}.png`
     link.href = qrDataUrl
     link.click()
+    trackToolExport('qr_code', 'download_png', { size, has_logo: !!logoSrc })
   }
 
   return (

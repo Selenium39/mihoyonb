@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react'
 import JSZip from 'jszip'
+import { trackToolExport, trackToolUse } from '@/lib/analytics'
 
 // 帧率未知时的默认步进间隔（1/25 秒）
 const FRAME_STEP = 1 / 25
@@ -371,6 +372,7 @@ export default function VideoFramePage() {
       time: video.currentTime,
     }
     setFrames((prev) => [...prev, frame])
+    trackToolUse('video_frame', 'capture')
   }
 
   const removeFrame = (id: string) => {
@@ -404,6 +406,7 @@ export default function VideoFramePage() {
       }
     }
     downloadBlob(blob, `frame_${frame.time.toFixed(2).replace('.', '_')}.${ext}`)
+    trackToolExport('video_frame', 'single', { format: exportFormat })
   }
 
   // 预计抽帧数量
@@ -459,6 +462,7 @@ export default function VideoFramePage() {
 
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       downloadBlob(zipBlob, `video-frames-${getFileTimestamp()}.zip`)
+      trackToolExport('video_frame', 'zip_batch', { format: exportFormat, count: total })
       if (failedFrames > 0) {
         alert(`已完成，其中 ${failedFrames} 帧捕获失败已跳过`)
       }

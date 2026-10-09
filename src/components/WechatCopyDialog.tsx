@@ -18,6 +18,7 @@ import {
   wechatPlainText,
   type WechatThemeId
 } from '@/lib/wechat-themes'
+import { trackToolExport } from '@/lib/analytics'
 
 interface WechatCopyDialogProps {
   open: boolean
@@ -93,10 +94,14 @@ export function WechatCopyDialog({ open, onOpenChange, markdownContent }: Wechat
         })
       ])
       setCopyStatus('html')
+      trackToolExport('markdown_to_image', 'copy_wechat', { theme: themeId, mode: 'html' })
     } catch {
       // 降级：复制纯文本
       const ok = copyTextFallback(plain)
       setCopyStatus(ok ? 'plain' : 'error')
+      if (ok) {
+        trackToolExport('markdown_to_image', 'copy_wechat', { theme: themeId, mode: 'plain' })
+      }
     }
 
     if (resetTimer.current) clearTimeout(resetTimer.current)

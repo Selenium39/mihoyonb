@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Plus, X, Download, Type, ArrowRight, Square, Circle, Copy, Palette } from 'lucide-react'
 import { CanvasElement } from '@/components/CanvasToolbar'
+import { trackToolExport } from '@/lib/analytics'
 
 // 布局定义
 const LAYOUTS = {
@@ -376,6 +377,7 @@ export default function ImageCombinePage() {
       link.download = `${mode}-collage-${Date.now()}.${ext}`
       link.href = canvas.toDataURL(mimeType, quality)
       link.click()
+      trackToolExport('image_combine', 'download', { format })
     } catch (error) {
       console.error('导出失败:', error)
       alert('导出失败，请重试')

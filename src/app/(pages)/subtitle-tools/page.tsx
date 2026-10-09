@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { trackToolExport, trackToolUse } from '@/lib/analytics'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Subtitles,
@@ -123,6 +124,7 @@ export default function SubtitleToolsPage() {
     const result = getParsedOrNotify()
     if (!result) return
     applyOutput(result.cues, target, `已转换 ${result.format.toUpperCase()} → ${target.toUpperCase()}`)
+    trackToolUse('subtitle_tools', 'convert', { target })
     setMessage(null)
   }
 
@@ -139,6 +141,7 @@ export default function SubtitleToolsPage() {
     const fmt = shiftOutFormat ?? result.format
     const abs = Math.abs(offset / 1000).toFixed(3)
     applyOutput(shifted, fmt, `已整体${offset >= 0 ? '延后' : '提前'} ${abs} 秒`)
+    trackToolUse('subtitle_tools', 'shift')
     setMessage(null)
   }
 
@@ -175,6 +178,7 @@ export default function SubtitleToolsPage() {
     const merged = mergeCues(first.cues, second.cues, { shiftSecondToEnd: mergeShiftToEnd })
     const fmt = mergeOutFormat ?? first.format
     applyOutput(merged, fmt, `已合并两份字幕（${first.cues.length} + ${second.cues.length} 条）`)
+    trackToolUse('subtitle_tools', 'merge')
     setMessage(null)
   }
 
@@ -194,6 +198,7 @@ export default function SubtitleToolsPage() {
     }
     const fmt = cleanOutFormat ?? result.format
     applyOutput(cues, fmt, label)
+    trackToolUse('subtitle_tools', 'clean')
 
     if (!autoFixOverlap && issues.length > 0) {
       setMessage({ type: 'info', text: `检测到 ${issues.length} 处时间码重叠，可勾选「自动修正时间重叠」后再次清理` })
@@ -217,6 +222,7 @@ export default function SubtitleToolsPage() {
       document.body.removeChild(ta)
     }
     setCopied(true)
+    trackToolExport('subtitle_tools', 'copy')
     setTimeout(() => setCopied(false), 2000)
   }
 
@@ -229,6 +235,7 @@ export default function SubtitleToolsPage() {
     link.href = url
     link.download = `subtitle-${Date.now()}.${outputFormat}`
     link.click()
+    trackToolExport('subtitle_tools', 'download', { format: outputFormat })
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 

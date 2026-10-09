@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { trackToolExport, trackToolUse } from '@/lib/analytics'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   ShieldAlert,
@@ -127,12 +128,14 @@ export default function SensitiveWordsPage() {
     setResult(detectSensitiveWords(text, categories))
     setProcessedText(null)
     setResultTab('highlight')
+    trackToolUse('sensitive_words', 'detect')
   }
 
   const handleMask = () => {
     if (!result) return
     setProcessedText(maskText(text, result.ranges, maskChar))
     setResultTab('processed')
+    trackToolUse('sensitive_words', 'mask')
   }
 
   const handleCopy = async () => {
@@ -158,6 +161,7 @@ export default function SensitiveWordsPage() {
     }
     if (ok) {
       setCopied(true)
+      trackToolExport('sensitive_words', 'copy')
       setTimeout(() => setCopied(false), 1500)
     }
   }

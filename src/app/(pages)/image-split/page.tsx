@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+import { trackToolExport } from '@/lib/analytics'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Scissors,
@@ -290,6 +291,7 @@ export default function ImageSplitPage() {
     try {
       const blob = await renderSliceBlob(image.source, rect, format, quality)
       downloadBlob(blob, buildSliceFilename(getFileBaseName(file.name), rect.index, format))
+      trackToolExport('image_split', 'single', { format })
     } catch (error) {
       setActionError(error instanceof Error ? error.message : '导出失败，请重试')
     }
@@ -309,6 +311,7 @@ export default function ImageSplitPage() {
       }
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       downloadBlob(zipBlob, `${base}_切割.zip`)
+      trackToolExport('image_split', 'zip', { format, count: sliceRects.length })
     } catch (error) {
       setActionError(error instanceof Error ? error.message : '打包导出失败，请重试')
     } finally {

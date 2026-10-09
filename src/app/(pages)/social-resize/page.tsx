@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+import { trackToolExport } from '@/lib/analytics'
 import {
   Crop,
   Expand,
@@ -418,6 +419,7 @@ export default function SocialResizePage() {
       const blob = await canvasToBlob(canvas, exportFormat, exportQuality)
       const base = file ? getFileBaseName(file.name) : 'image'
       downloadBlob(blob, buildFilename(base, opt.width, opt.height, exportFormat))
+      trackToolExport('social_resize', 'single', { format: exportFormat, size: `${opt.width}x${opt.height}` })
     } catch (error) {
       setActionError(error instanceof Error ? error.message : '导出失败，请重试')
     }
@@ -440,6 +442,7 @@ export default function SocialResizePage() {
       }
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       downloadBlob(zipBlob, `${base}_尺寸适配.zip`)
+      trackToolExport('social_resize', 'zip', { format: exportFormat, count: selectedOptions.length })
     } catch (error) {
       setActionError(error instanceof Error ? error.message : '打包导出失败，请重试')
     } finally {

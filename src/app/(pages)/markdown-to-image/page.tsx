@@ -10,6 +10,7 @@ import { WechatCopyDialog } from '@/components/WechatCopyDialog'
 import { Download, Settings, ZoomIn, ZoomOut, Maximize2, Minimize2, ClipboardCopy } from 'lucide-react'
 import html2canvas from 'html2canvas-pro'
 import { siteConfig } from '@/config/site'
+import { trackToolExport } from '@/lib/analytics'
 import {
   posterBackgrounds,
   getPosterStyle,
@@ -175,6 +176,7 @@ export default function MarkdownToImagePage() {
       link.download = `markdown-image-${Date.now()}.png`
       link.href = canvas.toDataURL('image/png', 1.0)
       link.click()
+      trackToolExport('markdown_to_image', 'download_png')
 
     } catch (error) {
       console.error('导出失败:', error)

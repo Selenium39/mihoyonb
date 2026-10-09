@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+import { trackToolExport } from '@/lib/analytics'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Stamp,
@@ -344,6 +345,7 @@ export default function ImageWatermarkPage() {
       } else {
         const zipBlob = await zip.generateAsync({ type: 'blob' })
         downloadBlob(zipBlob, `watermarked-images-${Date.now()}.zip`)
+        trackToolExport('image_watermark', 'zip', { format: exportFormat, ok: usedNames.size, failed })
         setExportSummary({ ok: usedNames.size, failed })
       }
     } catch {
