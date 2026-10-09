@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // 站内 next/image 仅用于小 logo，关闭服务端图片优化，
+  // standalone 运行时无需 sharp（否则 Next 14 生产模式强制要求）
+  images: {
+    unoptimized: true,
+  },
   // appDir is now stable in Next.js 14, no need for experimental flag
   async redirects() {
     return [
