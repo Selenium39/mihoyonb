@@ -1,0 +1,17 @@
+name: byos-deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, byos-deploy]
+    steps:
+      - name: byos deploy mihoyonb
+        run: |
+          set -euo pipefail
+          /home/box/src/byos-ops/ci/deploy-service.sh \
+            projects/onyxus-mihoyonb \
+            mihoyonb
