@@ -69,6 +69,12 @@ export function Footer() {
                 尺寸适配
               </Link>
               <Link
+                href="/pindou"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
+              >
+                拼豆图纸
+              </Link>
+              <Link
                 href="/qr-code"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
               >
