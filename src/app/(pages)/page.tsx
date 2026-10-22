@@ -7,6 +7,7 @@ import {
   FileText,
   Film,
   Grid3X3,
+  Palette,
   QrCode,
   Scissors,
   ShieldAlert,
@@ -80,6 +81,18 @@ const TOOL_GROUPS: { label: string; tools: ToolCardData[] }[] = [
         iconClass: 'text-cyan-600',
         tags: ['多平台预设', '居中裁切', '自定义尺寸'],
         cta: '开始适配',
+      },
+      {
+        title: '拼豆图纸',
+        subtitle: '图片转拼豆色号图纸',
+        description:
+          '上传 JPG、PNG 或 WebP，在浏览器本地生成可打印拼豆图纸，自动匹配参考色号并统计用量，支持导出高清 PNG 与采购清单。图片不上传服务器。',
+        href: '/pindou',
+        icon: Palette,
+        chipClass: 'bg-amber-100',
+        iconClass: 'text-amber-600',
+        tags: ['色号对照', '用量统计', '可打印'],
+        cta: '开始生成',
       },
       {
         title: '二维码生成',
