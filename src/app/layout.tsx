@@ -8,6 +8,7 @@ import { HtmlLangSync } from '@/components/HtmlLangSync'
 import { ConsentBanner } from '@/components/ConsentBanner'
 import { AdsScript } from '@/components/AdsScript'
 import { siteConfig } from '@/config/site'
+import { ADSENSE_CLIENT } from '@/config/ads'
 import { getLocaleFromPathname, hreflang } from '@/lib/i18n'
 import Script from 'next/script'
 
@@ -148,7 +149,7 @@ export default async function RootLayout({
         />
 
         {/* Google AdSense：仅在用户同意后加载 */}
-        <AdsScript clientId="ca-pub-3914969090265698" />
+        <AdsScript clientId={ADSENSE_CLIENT} />
 
       </body>
     </html>
