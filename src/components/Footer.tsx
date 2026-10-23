@@ -1,9 +1,81 @@
-import { Mail, Twitter, Heart } from 'lucide-react'
-import Link from 'next/link'
-import { siteConfig } from '@/config/site'
+'use client'
 
-export function Footer() {
+import { Mail, Twitter, Heart, Languages } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { siteConfig } from '@/config/site'
+import { alternateLocalePath, getLocaleFromPathname, type Locale } from '@/lib/i18n'
+
+type FooterLink = { href: string; label: string }
+
+/** 站点外壳文案：中英各一份；英文页脚不展示中文工具链接 */
+const FOOTER_COPY = {
+  zh: {
+    brand: siteConfig.name,
+    tagline: `${siteConfig.slogan}，`,
+    taglineSuffix: '助力您的内容创作',
+    privacy: '所有工具均在浏览器本地运行，文件不上传服务器，隐私安全，完全免费。',
+    quickNavHeading: '快捷导航',
+    contactHeading: '联系我们',
+    legalHeading: '法律条款',
+    languageSwitch: 'English',
+    languageSwitchAria: '切换到英文站',
+    links: [
+      { href: '/', label: '首页' },
+      { href: '/image-combine', label: '图片拼接' },
+      { href: '/image-split', label: '长图切割' },
+      { href: '/image-watermark', label: '图片加水印' },
+      { href: '/social-resize', label: '尺寸适配' },
+      { href: '/pindou', label: '拼豆图纸' },
+      { href: '/qr-code', label: '二维码生成' },
+      { href: '/video-frame', label: '视频截帧' },
+      { href: '/markdown-to-image', label: 'Markdown转图片' },
+      { href: '/subtitle-tools', label: '字幕工具' },
+      { href: '/sensitive-words', label: '敏感词检测' },
+    ] as FooterLink[],
+    legalLinks: [
+      { href: '/terms', label: '服务条款' },
+      { href: '/privacy', label: '隐私政策' },
+    ] as FooterLink[],
+  },
+  en: {
+    brand: 'mihoyonb',
+    tagline: 'Browser-based creative tools,',
+    taglineSuffix: 'made for creators',
+    privacy:
+      'Every tool runs entirely in your browser. Your files are never uploaded, and nothing is sent to a server. Free to use.',
+    quickNavHeading: 'Tools',
+    contactHeading: 'Contact',
+    legalHeading: 'Legal',
+    languageSwitch: '中文',
+    languageSwitchAria: 'Switch to the Chinese site',
+    links: [
+      { href: '/en', label: 'Home' },
+      { href: '/en/pindou', label: 'Perler Bead Pattern Generator' },
+    ] as FooterLink[],
+    legalLinks: [
+      { href: '/terms', label: 'Terms of Use' },
+      { href: '/privacy', label: 'Privacy Policy' },
+    ] as FooterLink[],
+  },
+} as const
+
+export function Footer({
+  locale: initialLocale,
+  pathname: initialPathname,
+}: {
+  locale: Locale
+  pathname?: string
+}) {
+  const currentPathname = usePathname()
+  // 根布局是共享布局，客户端切换中英路由时不会重新渲染，
+  // 因此以当前路由为准计算语言与切换目标，属性只作为初始值兜底。
+  const pathname = currentPathname || initialPathname || '/'
+  const locale: Locale = currentPathname ? getLocaleFromPathname(currentPathname) : initialLocale
+  const copy = FOOTER_COPY[locale]
   const currentYear = new Date().getFullYear()
+  const switchHref = alternateLocalePath(pathname)
+  const isEn = locale === 'en'
 
   return (
     <footer className="w-full border-t bg-gradient-to-br from-background to-muted/20">
@@ -15,102 +87,54 @@ export function Footer() {
           <div className="text-center md:text-left md:col-span-3 lg:col-span-1">
             <div className="flex flex-col space-y-3">
               <h3 className="text-lg font-semibold text-foreground flex items-center justify-center md:justify-start space-x-2">
-                <span>{siteConfig.name}</span>
+                <span>{copy.brand}</span>
                 <Heart size={16} className="text-red-500" />
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {siteConfig.slogan}，<br className="hidden sm:inline" />
-                助力您的内容创作
+                {copy.tagline}<br className="hidden sm:inline" />
+                {copy.taglineSuffix}
               </p>
               <p className="text-xs text-muted-foreground/80 leading-relaxed">
-                所有工具均在浏览器本地运行，文件不上传服务器，隐私安全，完全免费。
+                {copy.privacy}
               </p>
               <p className="text-xs text-muted-foreground/80">
-                © {currentYear} {siteConfig.name}. All rights reserved.
+                © {currentYear} {copy.brand}. All rights reserved.
               </p>
+              <Link
+                href={switchHref}
+                hrefLang={isEn ? 'zh-CN' : 'en'}
+                aria-label={copy.languageSwitchAria}
+                className="inline-flex items-center justify-center md:justify-start gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Languages size={14} />
+                {copy.languageSwitch}
+              </Link>
             </div>
           </div>
 
           {/* 快捷导航 */}
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-foreground text-center md:text-left">
-              快捷导航
+              {copy.quickNavHeading}
             </h4>
             {/* 桌面端两列网格，避免链接过多导致该栏过长 */}
             <div className="flex flex-col space-y-3 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-3 md:space-y-0">
-              <Link
-                href="/"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                首页
-              </Link>
-              <Link
-                href="/image-combine"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                图片拼接
-              </Link>
-              <Link
-                href="/image-split"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                长图切割
-              </Link>
-              <Link
-                href="/image-watermark"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                图片加水印
-              </Link>
-              <Link
-                href="/social-resize"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                尺寸适配
-              </Link>
-              <Link
-                href="/pindou"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                拼豆图纸
-              </Link>
-              <Link
-                href="/qr-code"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                二维码生成
-              </Link>
-              <Link
-                href="/video-frame"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                视频截帧
-              </Link>
-              <Link
-                href="/markdown-to-image"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                Markdown转图片
-              </Link>
-              <Link
-                href="/subtitle-tools"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                字幕工具
-              </Link>
-              <Link
-                href="/sensitive-words"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                敏感词检测
-              </Link>
+              {copy.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
           {/* 联系方式 */}
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-foreground text-center md:text-left">
-              联系我们
+              {copy.contactHeading}
             </h4>
             <div className="flex flex-col space-y-3">
               <a 
@@ -139,21 +163,18 @@ export function Footer() {
           {/* 法律链接 */}
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-foreground text-center md:text-left">
-              法律条款
+              {copy.legalHeading}
             </h4>
             <div className="flex flex-col space-y-3">
-              <Link 
-                href="/terms" 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                服务条款
-              </Link>
-              <Link 
-                href="/privacy" 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
-              >
-                隐私政策
-              </Link>
+              {copy.legalLinks.map((link) => (
+                <Link 
+                  key={link.href}
+                  href={link.href} 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -162,4 +183,4 @@ export function Footer() {
       </div>
     </footer>
   )
-} 
+}

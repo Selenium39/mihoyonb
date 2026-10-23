@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { HtmlLangSync } from '@/components/HtmlLangSync'
 import { siteConfig } from '@/config/site'
+import { getLocaleFromPathname, hreflang } from '@/lib/i18n'
 import Script from 'next/script'
 
 // Next 14 静态页默认输出 s-maxage=31536000（一年），CDN 会长期缓存旧页面
@@ -18,6 +21,12 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   alternates: {
     canonical: siteConfig.domain,
+    // 首页中英互指（其余页面在各页面自己的 layout 里声明，未翻译页面无需 hreflang）
+    languages: {
+      'zh-CN': siteConfig.domain,
+      en: `${siteConfig.domain}/en`,
+      'x-default': siteConfig.domain,
+    },
   },
   keywords: siteConfig.keywords,
   authors: [{ name: siteConfig.author.name, url: siteConfig.author.twitterUrl }],
@@ -88,25 +97,31 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // 语言由 middleware 注入的 x-pathname 决定：/en 前缀 -> en，其余 -> zh。
+  // 直接取不到时按键兜底为中文（默认语言）。
+  const pathname = headers().get('x-pathname') || '/'
+  const locale = getLocaleFromPathname(pathname)
+
   return (
-    <html lang="zh-CN">
+    <html lang={hreflang(locale)}>
       <head>
         {/* 额外的SEO标签 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className={inter.className}>
+        <HtmlLangSync />
         <div className="flex flex-col min-h-screen">
-          <Header />
+          <Header locale={locale} />
           <main className="flex-1">
             {children}
           </main>
-          <Footer />
+          <Footer locale={locale} pathname={pathname} />
         </div>
         
         {/* Umami Analytics */}

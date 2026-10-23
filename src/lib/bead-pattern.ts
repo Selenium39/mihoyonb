@@ -6,12 +6,15 @@
 import {
   PALETTE,
   PALETTE_NAME,
+  PALETTE_NAME_EN,
   PALETTE_NOTE,
+  PALETTE_NOTE_EN,
   deltaE76,
   inkForLab,
   nearestPaletteIndex,
   rgbToLab,
 } from './bead-palette'
+import type { Locale } from './i18n'
 
 export const MIN_COLS = 16
 export const MAX_COLS = 128
@@ -34,6 +37,8 @@ export interface GenerateOptions {
   maxColors: number | null
   /** null 表示不合并相近色；否则为 CIE76 阈值 */
   mergeThreshold: number | null
+  /** 界面语言，仅影响抛出的错误文案；默认中文 */
+  locale?: Locale
 }
 
 export interface BeadPattern {
@@ -72,6 +77,8 @@ export interface RenderPatternOptions {
   pixelRatio?: number
   /** 高亮某个色号；其余格子变淡 */
   highlightCode?: string | null
+  /** 图纸文字语言，默认中文 */
+  locale?: Locale
 }
 
 function clamp(n: number, min: number, max: number): number {
@@ -382,9 +389,10 @@ export function generateFromRgba(
 
 /** 从已解码的图片元素生成图纸。仅能在浏览器里调用。 */
 export function generateBeadPattern(image: HTMLImageElement, options: GenerateOptions): BeadPattern {
+  const en = (options.locale ?? 'zh') === 'en'
   const srcW = image.naturalWidth || image.width
   const srcH = image.naturalHeight || image.height
-  if (!srcW || !srcH) throw new Error('无法读取图片尺寸')
+  if (!srcW || !srcH) throw new Error(en ? 'Could not read the image dimensions.' : '无法读取图片尺寸')
 
   const grid = computeGridSize(srcW, srcH, options.cols, options.square)
   const scale = Math.min(1, MAX_WORK_EDGE / Math.max(grid.sw, grid.sh))
@@ -395,7 +403,12 @@ export function generateBeadPattern(image: HTMLImageElement, options: GenerateOp
   canvas.width = workW
   canvas.height = workH
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
-  if (!ctx) throw new Error('当前浏览器不支持 Canvas，无法处理图片')
+  if (!ctx)
+    throw new Error(
+      en
+        ? 'This browser does not support Canvas, so the image cannot be processed.'
+        : '当前浏览器不支持 Canvas，无法处理图片',
+    )
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(image, grid.sx, grid.sy, grid.sw, grid.sh, 0, 0, workW, workH)
@@ -411,7 +424,24 @@ export function generateBeadPattern(image: HTMLImageElement, options: GenerateOp
   )
 }
 
-export function patternToCsv(pattern: BeadPattern): string {
+export function patternToCsv(pattern: BeadPattern, locale: Locale = 'zh'): string {
+  if (locale === 'en') {
+    const lines = [
+      `Pattern size,${pattern.cols}x${pattern.rows}`,
+      `Total beads,${pattern.totalBeads}`,
+      `Colors,${pattern.usage.length}`,
+      `Palette,${PALETTE_NAME_EN}`,
+      '',
+      'Code,Family,Name,HEX,Count,Share',
+    ]
+    for (const item of pattern.usage) {
+      const color = PALETTE[item.index]
+      const pct = pattern.totalBeads ? ((item.count / pattern.totalBeads) * 100).toFixed(1) : '0.0'
+      lines.push(`${color.code},${color.familyEn},${color.nameEn},${color.hex},${item.count},${pct}%`)
+    }
+    return `\uFEFF${lines.join('\r\n')}`
+  }
+
   const lines = [
     `图纸尺寸,${pattern.cols}x${pattern.rows}`,
     `总颗数,${pattern.totalBeads}`,
@@ -428,7 +458,22 @@ export function patternToCsv(pattern: BeadPattern): string {
   return `\uFEFF${lines.join('\r\n')}`
 }
 
-export function patternToText(pattern: BeadPattern): string {
+export function patternToText(pattern: BeadPattern, locale: Locale = 'zh'): string {
+  if (locale === 'en') {
+    const lines = [
+      `Bead pattern ${pattern.cols}×${pattern.rows}`,
+      `${pattern.totalBeads} beads, ${pattern.usage.length} colors`,
+      PALETTE_NOTE_EN,
+      '',
+      'Code\tFamily\tName\tHEX\tCount',
+    ]
+    for (const item of pattern.usage) {
+      const color = PALETTE[item.index]
+      lines.push(`${color.code}\t${color.familyEn}\t${color.nameEn}\t${color.hex}\t${item.count}`)
+    }
+    return lines.join('\n')
+  }
+
   const lines = [
     `拼豆图纸 ${pattern.cols}×${pattern.rows}`,
     `共 ${pattern.totalBeads} 颗，${pattern.usage.length} 个色号`,
@@ -445,7 +490,9 @@ export function patternToText(pattern: BeadPattern): string {
 
 const FONT_STACK =
   '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",sans-serif'
+const FONT_STACK_EN = 'Inter,"Helvetica Neue",Helvetica,Arial,sans-serif'
 
+/** 中文按字断行，避免单词被拆开 */
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const lines: string[] = []
   let line = ''
@@ -455,6 +502,23 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
     if (line && ctx.measureText(next).width > maxWidth) {
       lines.push(line)
       line = ch
+    } else {
+      line = next
+    }
+  }
+  if (line) lines.push(line)
+  return lines
+}
+
+/** 英文按单词断行 */
+function wrapWords(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  const lines: string[] = []
+  let line = ''
+  for (const word of text.split(' ')) {
+    const next = line ? `${line} ${word}` : word
+    if (line && ctx.measureText(next).width > maxWidth) {
+      lines.push(line)
+      line = word
     } else {
       line = next
     }
@@ -529,8 +593,11 @@ export function renderBeadPattern(
   pattern: BeadPattern,
   options: RenderPatternOptions,
 ): HTMLCanvasElement {
+  const locale = options.locale ?? 'zh'
+  const en = locale === 'en'
+  const fontStack = en ? FONT_STACK_EN : FONT_STACK
   if (typeof document === 'undefined') {
-    throw new Error('图纸只能在浏览器中绘制')
+    throw new Error(en ? 'The pattern can only be rendered in a browser.' : '图纸只能在浏览器中绘制')
   }
   const pixelRatio = options.pixelRatio ?? 1
   const cell = Math.max(4, options.cellSize)
@@ -545,11 +612,11 @@ export function renderBeadPattern(
 
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('当前浏览器不支持 Canvas')
+  if (!ctx) throw new Error(en ? 'This browser does not support Canvas.' : '当前浏览器不支持 Canvas')
 
-  ctx.font = `${Math.round(13 * pixelRatio)}px ${FONT_STACK}`
-  const note = options.showHeader ? PALETTE_NOTE : ''
-  const noteLines = note ? wrapText(ctx, note, contentW) : []
+  ctx.font = `${Math.round(13 * pixelRatio)}px ${fontStack}`
+  const note = options.showHeader ? (en ? PALETTE_NOTE_EN : PALETTE_NOTE) : ''
+  const noteLines = note ? (en ? wrapWords(ctx, note, contentW) : wrapText(ctx, note, contentW)) : []
   const headerH = options.showHeader
     ? Math.round(26 * pixelRatio) + Math.round(22 * pixelRatio) + noteLines.length * Math.round(18 * pixelRatio) + Math.round(12 * pixelRatio)
     : 0
@@ -578,18 +645,20 @@ export function renderBeadPattern(
 
   let cursorY = pad
   if (options.showHeader) {
-    ctx.font = `700 ${Math.round(22 * pixelRatio)}px ${FONT_STACK}`
-    ctx.fillText('拼豆图纸', pad, cursorY)
+    ctx.font = `700 ${Math.round(22 * pixelRatio)}px ${fontStack}`
+    ctx.fillText(en ? 'Bead Pattern' : '拼豆图纸', pad, cursorY)
     cursorY += Math.round(28 * pixelRatio)
-    ctx.font = `${Math.round(14 * pixelRatio)}px ${FONT_STACK}`
+    ctx.font = `${Math.round(14 * pixelRatio)}px ${fontStack}`
     ctx.fillStyle = '#444444'
     ctx.fillText(
-      `${cols} × ${rows} 格 · ${pattern.totalBeads} 颗 · ${pattern.usage.length} 色 · ${PALETTE_NAME}`,
+      en
+        ? `${cols} × ${rows} cells · ${pattern.totalBeads} beads · ${pattern.usage.length} colors · ${PALETTE_NAME_EN}`
+        : `${cols} × ${rows} 格 · ${pattern.totalBeads} 颗 · ${pattern.usage.length} 色 · ${PALETTE_NAME}`,
       pad,
       cursorY,
     )
     cursorY += Math.round(22 * pixelRatio)
-    ctx.font = `${Math.round(12 * pixelRatio)}px ${FONT_STACK}`
+    ctx.font = `${Math.round(12 * pixelRatio)}px ${fontStack}`
     ctx.fillStyle = '#666666'
     for (const line of noteLines) {
       ctx.fillText(line, pad, cursorY)
@@ -608,12 +677,12 @@ export function renderBeadPattern(
   const dimming = highlightIndex >= 0
 
   let fontSize = Math.floor(cell * 0.4)
-  ctx.font = `700 ${fontSize}px ${FONT_STACK}`
+  ctx.font = `700 ${fontSize}px ${fontStack}`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   while (fontSize > 7 && ctx.measureText('G10').width > cell - 4 * pixelRatio) {
     fontSize -= 1
-    ctx.font = `700 ${fontSize}px ${FONT_STACK}`
+    ctx.font = `700 ${fontSize}px ${fontStack}`
   }
   const canDrawCodes = options.showCodes && fontSize >= 7 && ctx.measureText('G10').width <= cell - 2
 
@@ -634,7 +703,7 @@ export function renderBeadPattern(
       ctx.globalAlpha = 1
       if (canDrawCodes && !dimmed) {
         ctx.fillStyle = inkForLab(color.lab)
-        ctx.font = `700 ${fontSize}px ${FONT_STACK}`
+        ctx.font = `700 ${fontSize}px ${fontStack}`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(color.code, x + cell / 2, y + cell / 2 + pixelRatio * 0.5)
@@ -654,7 +723,7 @@ export function renderBeadPattern(
 
   if (options.showCoords) {
     ctx.fillStyle = '#6b7280'
-    ctx.font = `${Math.max(10, Math.round(11 * pixelRatio))}px ${FONT_STACK}`
+    ctx.font = `${Math.max(10, Math.round(11 * pixelRatio))}px ${fontStack}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     for (const mark of coordMarks(cols, cell)) {
@@ -670,9 +739,15 @@ export function renderBeadPattern(
   if (options.showHeader && pattern.emptyCount > 0) {
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
-    ctx.font = `${Math.round(12 * pixelRatio)}px ${FONT_STACK}`
+    ctx.font = `${Math.round(12 * pixelRatio)}px ${fontStack}`
     ctx.fillStyle = '#666666'
-    ctx.fillText(`棋盘格为空白，共 ${pattern.emptyCount} 格，不计入用量。`, pad, cursorY)
+    ctx.fillText(
+      en
+        ? `Checkerboard cells are empty: ${pattern.emptyCount} cells, not counted in bead usage.`
+        : `棋盘格为空白，共 ${pattern.emptyCount} 格，不计入用量。`,
+      pad,
+      cursorY,
+    )
     cursorY += emptyNoteH
   }
 
@@ -681,8 +756,8 @@ export function renderBeadPattern(
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
     ctx.fillStyle = '#111111'
-    ctx.font = `700 ${Math.round(14 * pixelRatio)}px ${FONT_STACK}`
-    ctx.fillText('用量图例（按颗数从多到少）', pad, cursorY)
+    ctx.font = `700 ${Math.round(14 * pixelRatio)}px ${fontStack}`
+    ctx.fillText(en ? 'Bead usage (most used first)' : '用量图例（按颗数从多到少）', pad, cursorY)
     cursorY += legendTitleH
     const colW = contentW / legendCols
     pattern.usage.forEach((item, order) => {
@@ -698,10 +773,12 @@ export function renderBeadPattern(
       ctx.lineWidth = Math.max(1, pixelRatio)
       ctx.strokeRect(x, y + Math.round(4 * pixelRatio), swatch, swatch)
       ctx.fillStyle = '#222222'
-      ctx.font = `${Math.round(12 * pixelRatio)}px ${FONT_STACK}`
+      ctx.font = `${Math.round(12 * pixelRatio)}px ${fontStack}`
       const pct = pattern.totalBeads ? Math.round((item.count / pattern.totalBeads) * 1000) / 10 : 0
       ctx.fillText(
-        `${color.code}  ${color.name}  ${color.hex}  ${item.count} 颗  ${pct}%`,
+        en
+          ? `${color.code}  ${color.nameEn}  ${color.hex}  ${item.count} beads  ${pct}%`
+          : `${color.code}  ${color.name}  ${color.hex}  ${item.count} 颗  ${pct}%`,
         x + swatch + Math.round(8 * pixelRatio),
         y + Math.round(4 * pixelRatio),
       )
@@ -712,9 +789,15 @@ export function renderBeadPattern(
   if (options.showHeader) {
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
-    ctx.font = `${Math.round(12 * pixelRatio)}px ${FONT_STACK}`
+    ctx.font = `${Math.round(12 * pixelRatio)}px ${fontStack}`
     ctx.fillStyle = '#888888'
-    ctx.fillText('原牛 mihoyonb.com/pindou · 免费 · 浏览器本地生成 · 图片不上传', pad, canvas.height - pad - Math.round(4 * pixelRatio))
+    ctx.fillText(
+      en
+        ? 'mihoyonb.com/en/pindou · Free · Generated locally in your browser · Image never uploaded'
+        : '原牛 mihoyonb.com/pindou · 免费 · 浏览器本地生成 · 图片不上传',
+      pad,
+      canvas.height - pad - Math.round(4 * pixelRatio),
+    )
   }
 
   return canvas
