@@ -54,8 +54,8 @@ const FOOTER_COPY = {
       { href: '/en/pindou', label: 'Perler Bead Pattern Generator' },
     ] as FooterLink[],
     legalLinks: [
-      { href: '/terms', label: 'Terms of Use' },
-      { href: '/privacy', label: 'Privacy Policy' },
+      { href: '/en/terms', label: 'Terms of Use' },
+      { href: '/en/privacy', label: 'Privacy Policy' },
     ] as FooterLink[],
   },
 } as const

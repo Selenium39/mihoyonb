@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: `${siteConfig.name}${siteConfig.pages.terms.description}`,
   alternates: {
     canonical: getPageUrl('/terms'),
+    languages: {
+      'zh-CN': getPageUrl('/terms'),
+      en: getPageUrl('/en/terms'),
+      'x-default': getPageUrl('/terms'),
+    },
   },
   robots: {
     index: true,

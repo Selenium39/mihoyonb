@@ -11,6 +11,7 @@ import { siteConfig } from '@/config/site'
  * - 首页：src/app/layout.tsx（zh-CN / en / x-default）
  * - /en：src/app/en/page.tsx
  * - /pindou 与 /en/pindou：各自页面的 layout.tsx
+ * - /privacy 与 /en/privacy、/terms 与 /en/terms：各自页面的 layout.tsx
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteConfig.domain
@@ -103,6 +104,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/privacy`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/en/terms`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/en/privacy`,
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.5,

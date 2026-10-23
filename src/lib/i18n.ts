@@ -13,6 +13,8 @@ export const LOCALES: readonly Locale[] = ['zh', 'en']
 /** 已翻译的页面配对（中文路径 <-> 英文路径），语言切换只在这些页面间互跳 */
 export const TRANSLATED_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['/pindou', '/en/pindou'],
+  ['/privacy', '/en/privacy'],
+  ['/terms', '/en/terms'],
 ]
 
 export function isEnglishPath(pathname: string): boolean {

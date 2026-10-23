@@ -120,7 +120,7 @@ src/
 
 英文站挂在 `/en` 前缀下，中文页保持原有 URL：
 
-- `/en`：英文落地页；`/en/pindou`：Perler Bead Pattern Generator（首个英文工具页）
+- `/en`：英文落地页；`/en/pindou`：Perler Bead Pattern Generator（首个英文工具页）；`/en/privacy`、`/en/terms`：英文法律页（与中文版同口径）
 - 语言判断与跳转统一走 `src/lib/i18n.ts`；根布局通过 `src/middleware.ts` 注入的 `x-pathname` 输出正确的 `<html lang>`
 - 中英页面互相声明 canonical / hreflang；新增英文页同时更新 `src/app/sitemap.ts`
 - 页面文案放在同目录 `copy.ts`（参考 `src/app/(pages)/pindou/copy.ts`）

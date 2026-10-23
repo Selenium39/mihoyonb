@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: `${siteConfig.name}${siteConfig.pages.privacy.description}`,
   alternates: {
     canonical: getPageUrl('/privacy'),
+    languages: {
+      'zh-CN': getPageUrl('/privacy'),
+      en: getPageUrl('/en/privacy'),
+      'x-default': getPageUrl('/privacy'),
+    },
   },
   robots: {
     index: true,
