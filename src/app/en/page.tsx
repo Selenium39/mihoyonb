@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: siteConfig.logo.og,
+        url: siteConfig.logo.ogEn,
         width: 1200,
         height: 630,
         alt: SITE_TITLE,
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     creator: siteConfig.author.twitter,
-    images: [siteConfig.logo.og],
+    images: [siteConfig.logo.ogEn],
   },
 }
 

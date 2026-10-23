@@ -24,6 +24,14 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: 'zh_CN',
     type: 'website',
+    images: [
+      {
+        url: siteConfig.logo.og,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.title,
+      },
+    ],
   },
 }
 
