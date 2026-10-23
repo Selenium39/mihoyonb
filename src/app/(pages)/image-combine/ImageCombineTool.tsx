@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import Link from 'next/link'
-import { Plus, X, Download, Type, ArrowRight, Square, Circle, Copy, Languages } from 'lucide-react'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { Plus, X, Download, Type, ArrowRight, Square, Circle, Copy } from 'lucide-react'
 import { CanvasElement } from '@/components/CanvasToolbar'
 import { trackToolExport } from '@/lib/analytics'
-import { alternateLocalePath, type Locale } from '@/lib/i18n'
+import { type Locale } from '@/lib/i18n'
 import { getImageCombineCopy } from './copy'
 
 // 布局定义
@@ -103,12 +103,6 @@ export interface ImageCombineToolProps {
 
 export default function ImageCombineTool({ locale }: ImageCombineToolProps) {
   const copy = getImageCombineCopy(locale)
-  const currentPath = locale === 'en' ? '/en/image-combine' : '/image-combine'
-  // 语言互跳依赖 lib/i18n 的 TRANSLATED_PAIRS；该配对登记前 alternateLocalePath 会回落到
-  // 语言首页，这里兜底到本页对应语言版本，避免切换后跳出工具页。
-  const fallbackHref = locale === 'en' ? '/image-combine' : '/en/image-combine'
-  const alternateHref = alternateLocalePath(currentPath)
-  const switchHref = alternateHref === (locale === 'en' ? '/' : '/en') ? fallbackHref : alternateHref
 
   const [mode, setMode] = useState<'layout' | 'stitching'>('layout')
   const [images, setImages] = useState<ImageData[]>([])
@@ -1357,15 +1351,7 @@ export default function ImageCombineTool({ locale }: ImageCombineToolProps) {
     <div className="bg-background min-h-screen">
       <div className="container mx-auto py-8 px-4">
         <div className="mb-4 flex justify-end">
-          <Link
-            href={switchHref}
-            hrefLang={locale === 'en' ? 'zh-CN' : 'en'}
-            aria-label={copy.languageSwitch.ariaLabel}
-            className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
-          >
-            <Languages size={13} />
-            {copy.languageSwitch.label}
-          </Link>
+          <LanguageSwitcher variant="inline" />
         </div>
 
         <div className="mb-8 text-center">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,7 +20,6 @@ import {
   Wrench,
   Check,
   AlertTriangle,
-  Languages,
 } from 'lucide-react'
 import {
   type OverlapIssue,
@@ -35,7 +34,7 @@ import {
   fixOverlaps,
   serializeSubtitle,
 } from '@/lib/subtitle'
-import { alternateLocalePath, type Locale } from '@/lib/i18n'
+import { type Locale } from '@/lib/i18n'
 import { getSubtitleToolsCopy } from './copy'
 
 interface ActionMessage {
@@ -49,8 +48,6 @@ interface ActionMessage {
  */
 export default function SubtitleToolsTool({ locale }: { locale: Locale }) {
   const copy = getSubtitleToolsCopy(locale)
-  const currentPath = locale === 'en' ? '/en/subtitle-tools' : '/subtitle-tools'
-  const switchHref = alternateLocalePath(currentPath)
 
   // 输入
   const [inputText, setInputText] = useState('')
@@ -300,15 +297,7 @@ export default function SubtitleToolsTool({ locale }: { locale: Locale }) {
       <div className="container mx-auto py-8 px-4">
         {/* 语言切换 */}
         <div className="mb-4 flex justify-end">
-          <Link
-            href={switchHref}
-            hrefLang={locale === 'en' ? 'zh-CN' : 'en'}
-            aria-label={copy.languageSwitch.ariaLabel}
-            className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
-          >
-            <Languages size={13} />
-            {copy.languageSwitch.label}
-          </Link>
+          <LanguageSwitcher variant="inline" />
         </div>
 
         {/* 页面标题 */}

@@ -9,7 +9,9 @@ import {
   LayoutGrid,
   Palette,
   QrCode,
+  Scaling,
   Scissors,
+  ShieldAlert,
   ShieldCheck,
   Stamp,
   Subtitles,
@@ -25,14 +27,14 @@ const ZH_HOME_URL = siteConfig.domain
 
 const SITE_TITLE = 'mihoyonb — Free Browser-Based Tools for Creators'
 const SITE_DESCRIPTION =
-  'Free, privacy-first browser tools: Perler bead patterns, photo collage, image splitter, watermark, Markdown to image, QR codes, subtitles and video frames. No uploads, no signup.'
+  'Free, privacy-first browser tools: Perler bead patterns, photo collage, image splitter, watermark, social media image resizer, sensitive word checker, Markdown to image, QR codes, subtitles and video frames. No uploads, no signup.'
 
 export const metadata: Metadata = {
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   publisher: 'mihoyonb',
   keywords:
-    'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, photo collage maker, image splitter, image watermark, markdown to image, qr code generator, subtitle converter, video frame extractor, privacy-first tools, no upload tools, no signup tools, client-side image tools',
+    'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, photo collage maker, image splitter, image watermark, social media image resizer, instagram image resizer, sensitive word checker, ad copy checker, markdown to image, qr code generator, subtitle converter, video frame extractor, privacy-first tools, no upload tools, no signup tools, client-side image tools',
   alternates: {
     canonical: EN_HOME_URL,
     languages: {
@@ -158,6 +160,24 @@ const OTHER_TOOLS: {
     iconClass: 'text-teal-600',
   },
   {
+    title: 'Social Media Image Resizer',
+    description:
+      'Resize one image for Instagram, X, LinkedIn and YouTube in a click — free, no upload.',
+    href: '/en/social-resize',
+    icon: Scaling,
+    chipClass: 'bg-rose-100',
+    iconClass: 'text-rose-600',
+  },
+  {
+    title: 'Sensitive Word Checker',
+    description:
+      'Scan ad copy and posts for risky claims, with highlights and one-click masking.',
+    href: '/en/sensitive-words',
+    icon: ShieldAlert,
+    chipClass: 'bg-amber-100',
+    iconClass: 'text-amber-600',
+  },
+  {
     title: 'Markdown to Image',
     description:
       'Turn Markdown into a shareable PNG with live preview and custom themes.',
@@ -218,7 +238,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: 'Which other tools are available?',
     answer:
-      'A photo collage maker, image splitter, batch image watermark, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
+      'A photo collage maker, image splitter, batch image watermark, social media image resizer, sensitive word checker, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
   },
 ]
 

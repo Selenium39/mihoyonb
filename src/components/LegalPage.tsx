@@ -1,34 +1,18 @@
-import Link from 'next/link'
-import { Languages } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { LegalDoc } from '@/content/legal'
 import type { Locale } from '@/lib/i18n'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 /**
  * 法律页面通用渲染：隐私政策 / 服务条款共用，中英同构。
- * 语言切换由路由传入 altHref，避免这里再判断路径。
+ * 语言切换统一走 LanguageSwitcher，按当前路径自动配对。
  */
-export function LegalPage({
-  doc,
-  locale,
-  altHref,
-}: {
-  doc: LegalDoc
-  locale: Locale
-  altHref: string
-}) {
+export function LegalPage({ doc, locale }: { doc: LegalDoc; locale: Locale }) {
   return (
     <div className="bg-background">
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-4xl mx-auto mb-4 flex justify-end">
-          <Link
-            href={altHref}
-            hrefLang={locale === 'en' ? 'zh-CN' : 'en'}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Languages size={14} />
-            {locale === 'en' ? '中文' : 'English'}
-          </Link>
+          <LanguageSwitcher variant="inline" locale={locale} />
         </div>
 
         <Card className="w-full max-w-4xl mx-auto">

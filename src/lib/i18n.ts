@@ -20,6 +20,8 @@ export const TRANSLATED_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['/qr-code', '/en/qr-code'],
   ['/video-frame', '/en/video-frame'],
   ['/subtitle-tools', '/en/subtitle-tools'],
+  ['/social-resize', '/en/social-resize'],
+  ['/sensitive-words', '/en/sensitive-words'],
   ['/privacy', '/en/privacy'],
   ['/terms', '/en/terms'],
 ]

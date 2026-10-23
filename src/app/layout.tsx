@@ -132,7 +132,7 @@ export default async function RootLayout({
           <main className="flex-1">
             {children}
           </main>
-          <Footer locale={locale} pathname={pathname} />
+          <Footer locale={locale} />
         </div>
         
         {/* Umami Analytics（无 Cookie，不记录工具内容） */}

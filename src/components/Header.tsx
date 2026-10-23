@@ -4,14 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { ChevronDown, Github, Languages } from 'lucide-react'
+import { ChevronDown, Github } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { NAV_GROUPS, isGroupActive } from '@/config/navigation'
-import { alternateLocalePath, getLocaleFromPathname, type Locale } from '@/lib/i18n'
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 /**
  * 站点外壳文案：中英各一份。
- * 英文版只保留已可访问的英文页面（/en、/en/pindou），不展示中文工具链接。
+ * 英文版只展示 /en 下已上线的英文页面，不展示中文工具链接。
  */
 const HEADER_COPY = {
   zh: {
@@ -22,8 +23,6 @@ const HEADER_COPY = {
     githubAria: 'GitHub 源码仓库',
     githubLabel: 'GitHub 源码',
     toggleMenu: '切换菜单',
-    languageSwitch: 'English',
-    languageSwitchAria: '切换到英文站',
   },
   en: {
     brand: 'mihoyonb',
@@ -33,8 +32,6 @@ const HEADER_COPY = {
     githubAria: 'GitHub source repository',
     githubLabel: 'GitHub source',
     toggleMenu: 'Toggle menu',
-    languageSwitch: '中文',
-    languageSwitchAria: 'Switch to the Chinese site',
   },
 } as const
 
@@ -47,7 +44,6 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
   const isEn = locale === 'en'
 
   const homeHref = isEn ? '/en' : '/'
-  const switchHref = alternateLocalePath(pathname || homeHref)
 
   // 英文站导航（只列已上线页面）
   const enLinks: { href: string; label: string }[] = [
@@ -185,15 +181,7 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
 
           {/* 右侧：语言切换、GitHub 源码入口（桌面）与汉堡菜单按钮（移动） */}
           <div className="flex items-center gap-2">
-            <Link
-              href={switchHref}
-              hrefLang={isEn ? 'zh-CN' : 'en'}
-              aria-label={copy.languageSwitchAria}
-              className="hidden md:flex items-center gap-1.5 h-8 px-2 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-            >
-              <Languages className="w-4 h-4" />
-              {copy.languageSwitch}
-            </Link>
+            <LanguageSwitcher variant="header" locale={locale} className="hidden md:flex" />
             <a
               href={siteConfig.links.github}
               target="_blank"
@@ -315,15 +303,11 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
                 <Github className="w-3.5 h-3.5" />
                 {copy.githubLabel}
               </a>
-              <Link
-                href={switchHref}
-                hrefLang={isEn ? 'zh-CN' : 'en'}
-                className="flex items-center gap-2 px-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Languages className="w-3.5 h-3.5" />
-                {copy.languageSwitch}
-              </Link>
+              <LanguageSwitcher
+                variant="mobile"
+                locale={locale}
+                onSelect={() => setIsMenuOpen(false)}
+              />
             </div>
           </nav>
         </div>

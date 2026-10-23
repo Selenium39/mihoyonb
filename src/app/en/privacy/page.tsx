@@ -3,5 +3,5 @@ import { privacyContent } from '@/content/legal'
 
 /** English privacy policy (/en/privacy), same substance as /privacy */
 export default function EnPrivacyPage() {
-  return <LegalPage doc={privacyContent.en} locale="en" altHref="/privacy" />
+  return <LegalPage doc={privacyContent.en} locale="en" />
 }

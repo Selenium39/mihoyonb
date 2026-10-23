@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,9 +27,8 @@ import {
   MessageCircle,
   BookOpen,
   Layers,
-  Languages,
 } from 'lucide-react'
-import { alternateLocalePath, type Locale } from '@/lib/i18n'
+import { type Locale } from '@/lib/i18n'
 import {
   computeSlices,
   downloadBlob,
@@ -81,8 +80,6 @@ export interface ImageSplitToolProps {
 
 export default function ImageSplitTool({ locale }: ImageSplitToolProps) {
   const copy = getImageSplitCopy(locale)
-  const currentPath = locale === 'en' ? '/en/image-split' : '/image-split'
-  const switchHref = alternateLocalePath(currentPath)
 
   const [file, setFile] = useState<File | null>(null)
   const [image, setImage] = useState<LoadedImage | null>(null)
@@ -280,15 +277,7 @@ export default function ImageSplitTool({ locale }: ImageSplitToolProps) {
     <div className="bg-background min-h-screen">
       <div className="container mx-auto py-8 px-4">
         <div className="mb-4 flex justify-end">
-          <Link
-            href={switchHref}
-            hrefLang={locale === 'en' ? 'zh-CN' : 'en'}
-            aria-label={copy.languageSwitch.ariaLabel}
-            className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
-          >
-            <Languages size={13} />
-            {copy.languageSwitch.label}
-          </Link>
+          <LanguageSwitcher variant="inline" />
         </div>
 
         {/* 标题区 */}

@@ -1,10 +1,11 @@
 'use client'
 
-import { Mail, Twitter, Heart, Languages } from 'lucide-react'
+import { Mail, Twitter, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/config/site'
-import { alternateLocalePath, getLocaleFromPathname, type Locale } from '@/lib/i18n'
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { OPEN_CONSENT_EVENT } from '@/lib/consent'
 
 type FooterLink = { href: string; label: string }
@@ -20,8 +21,6 @@ const FOOTER_COPY = {
     contactHeading: '联系我们',
     legalHeading: '法律条款',
     cookieSettings: 'Cookie 设置',
-    languageSwitch: 'English',
-    languageSwitchAria: '切换到英文站',
     links: [
       { href: '/', label: '首页' },
       { href: '/image-combine', label: '图片拼接' },
@@ -50,14 +49,14 @@ const FOOTER_COPY = {
     contactHeading: 'Contact',
     legalHeading: 'Legal',
     cookieSettings: 'Cookie settings',
-    languageSwitch: '中文',
-    languageSwitchAria: 'Switch to the Chinese site',
     links: [
       { href: '/en', label: 'Home' },
       { href: '/en/pindou', label: 'Perler Bead Pattern Generator' },
       { href: '/en/image-combine', label: 'Photo Collage' },
       { href: '/en/image-split', label: 'Image Splitter' },
       { href: '/en/image-watermark', label: 'Image Watermark' },
+      { href: '/en/social-resize', label: 'Social Media Image Resizer' },
+      { href: '/en/sensitive-words', label: 'Sensitive Word Checker' },
       { href: '/en/markdown-to-image', label: 'Markdown to Image' },
       { href: '/en/qr-code', label: 'QR Code Generator' },
       { href: '/en/subtitle-tools', label: 'Subtitle Converter' },
@@ -70,22 +69,13 @@ const FOOTER_COPY = {
   },
 } as const
 
-export function Footer({
-  locale: initialLocale,
-  pathname: initialPathname,
-}: {
-  locale: Locale
-  pathname?: string
-}) {
+export function Footer({ locale: initialLocale }: { locale: Locale }) {
   const currentPathname = usePathname()
   // 根布局是共享布局，客户端切换中英路由时不会重新渲染，
-  // 因此以当前路由为准计算语言与切换目标，属性只作为初始值兜底。
-  const pathname = currentPathname || initialPathname || '/'
+  // 因此以当前路由为准计算语言，属性只作为初始值兜底。
   const locale: Locale = currentPathname ? getLocaleFromPathname(currentPathname) : initialLocale
   const copy = FOOTER_COPY[locale]
   const currentYear = new Date().getFullYear()
-  const switchHref = alternateLocalePath(pathname)
-  const isEn = locale === 'en'
 
   return (
     <footer className="w-full border-t bg-gradient-to-br from-background to-muted/20">
@@ -110,15 +100,9 @@ export function Footer({
               <p className="text-xs text-muted-foreground/80">
                 © {currentYear} {copy.brand}. All rights reserved.
               </p>
-              <Link
-                href={switchHref}
-                hrefLang={isEn ? 'zh-CN' : 'en'}
-                aria-label={copy.languageSwitchAria}
-                className="inline-flex items-center justify-center md:justify-start gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Languages size={14} />
-                {copy.languageSwitch}
-              </Link>
+              <div className="flex justify-center md:justify-start">
+                <LanguageSwitcher variant="footer" locale={locale} />
+              </div>
             </div>
           </div>
 

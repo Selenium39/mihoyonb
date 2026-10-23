@@ -1,17 +1,26 @@
 import type { Metadata } from 'next'
 import { siteConfig, getPageTitle, getPageUrl } from '@/config/site'
+import { hreflang } from '@/lib/i18n'
+
+const ZH_URL = getPageUrl('/social-resize')
+const EN_URL = getPageUrl('/en/social-resize')
 
 export const metadata: Metadata = {
   title: getPageTitle(siteConfig.pages.socialResize.title),
   description: siteConfig.pages.socialResize.description,
   alternates: {
-    canonical: getPageUrl('/social-resize'),
+    canonical: ZH_URL,
+    languages: {
+      [hreflang('zh')]: ZH_URL,
+      [hreflang('en')]: EN_URL,
+      'x-default': ZH_URL,
+    },
   },
   keywords: siteConfig.pages.socialResize.keywords,
   openGraph: {
     title: getPageTitle(siteConfig.pages.socialResize.title),
     description: siteConfig.pages.socialResize.description,
-    url: getPageUrl('/social-resize'),
+    url: ZH_URL,
     siteName: siteConfig.name,
     locale: 'zh_CN',
     type: 'website',

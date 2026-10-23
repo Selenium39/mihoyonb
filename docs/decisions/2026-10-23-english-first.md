@@ -44,3 +44,18 @@
 - 共享组件 `MarkdownEditor`、`CustomizeDialog`、`WechatCopyDialog`、`ImagePreview`、`CanvasToolbar` 支持可选 `locale`（默认中文），英文页传 `en`。
 - 按上文决策，`social-resize`（中文平台规格）与 `sensitive-words`（中文广告法词库）保留中文版，不做英文翻译。
 - EEA/UK/CH：自建同意横幅 + Google Consent Mode v2；拒绝时不加载 AdSense，页脚「Cookie settings」可随时撤回。当前不是 Google 认证 CMP，后续可评估 Funding Choices。
+
+## 追加决策（2026-10-23，站主确认）
+
+**全站页面统一提供英文版，不再保留“中文专属工具”。** 此前“`social-resize` / `sensitive-words` 不做英文版”的备注作废，按以下口径执行：
+
+- `social-resize` 英文版使用英文市场平台规格（Instagram / X / LinkedIn / YouTube），中文版保留公众号、小红书、抖音等原规格。
+- `sensitive-words` 英文版使用英文广告合规词库（绝对化宣称、仿品、赌博、毒品、武器等），并按英文词边界匹配；中文词库与匹配逻辑保持不变。
+- 语言切换统一为下拉选择（Header、Footer、工具页、法律页），不再使用“点一下跳转”的单链按钮。
+- 新增页面仍须满足 canonical + hreflang 互指、sitemap、`<html lang>` 三项要求。
+
+### 实施进度（2026-10-23 追加）
+
+- 已新增 `/en/social-resize`、`/en/sensitive-words`，全部 13 个中文页面均有对应英文页。
+- 语言下拉覆盖 Header 桌面/移动菜单、Footer、工具页右上角、法律页右上角；当前语言高亮，选择后跳转到配对路由。
+- sitemap 共 26 条 URL；英文首页工具卡片增至 10 个（含 2 个新工具），Footer 英文导航同步。

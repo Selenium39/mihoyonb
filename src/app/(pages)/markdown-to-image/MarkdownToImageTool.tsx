@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MarkdownEditor } from '@/components/MarkdownEditor'
@@ -16,12 +16,11 @@ import {
   Maximize2,
   Minimize2,
   ClipboardCopy,
-  Languages,
 } from 'lucide-react'
 import html2canvas from 'html2canvas-pro'
 import { siteConfig } from '@/config/site'
 import { trackToolExport } from '@/lib/analytics'
-import { alternateLocalePath, type Locale } from '@/lib/i18n'
+import { type Locale } from '@/lib/i18n'
 import {
   posterBackgrounds,
   getPosterStyle,
@@ -38,8 +37,6 @@ export interface MarkdownToImageToolProps {
 
 export default function MarkdownToImageTool({ locale }: MarkdownToImageToolProps) {
   const copy = getMarkdownToImageCopy(locale)
-  const currentPath = locale === 'en' ? '/en/markdown-to-image' : '/markdown-to-image'
-  const switchHref = alternateLocalePath(currentPath)
 
   const [markdownContent, setMarkdownContent] = useState(() =>
     copy.sampleMarkdown(siteConfig.name, siteConfig.slogan)
@@ -322,15 +319,7 @@ export default function MarkdownToImageTool({ locale }: MarkdownToImageToolProps
         <div className="container mx-auto py-4 md:py-8 px-4">
           {/* 语言切换 */}
           <div className="mb-3 flex justify-end">
-            <Link
-              href={switchHref}
-              hrefLang={locale === 'en' ? 'zh-CN' : 'en'}
-              aria-label={copy.languageSwitch.ariaLabel}
-              className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
-            >
-              <Languages size={13} />
-              {copy.languageSwitch.label}
-            </Link>
+            <LanguageSwitcher variant="inline" />
           </div>
 
           {/* 页面标题和工具栏 */}
