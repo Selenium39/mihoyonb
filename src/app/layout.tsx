@@ -5,6 +5,8 @@ import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { HtmlLangSync } from '@/components/HtmlLangSync'
+import { ConsentBanner } from '@/components/ConsentBanner'
+import { AdsScript } from '@/components/AdsScript'
 import { siteConfig } from '@/config/site'
 import { getLocaleFromPathname, hreflang } from '@/lib/i18n'
 import Script from 'next/script'
@@ -106,6 +108,7 @@ export default async function RootLayout({
   // 直接取不到时按键兜底为中文（默认语言）。
   const pathname = headers().get('x-pathname') || '/'
   const locale = getLocaleFromPathname(pathname)
+  const geoCountry = headers().get('x-geo-country')
 
   return (
     <html lang={hreflang(locale)}>
@@ -113,9 +116,17 @@ export default async function RootLayout({
         {/* 额外的SEO标签 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
+        {/* Google Consent Mode v2 默认值：广告与统计全部先拒绝，用户选择后再 update */}
+        <script
+          id="consent-default"
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);`,
+          }}
+        />
       </head>
       <body className={inter.className}>
         <HtmlLangSync />
+        <ConsentBanner locale={locale} geoCountry={geoCountry} />
         <div className="flex flex-col min-h-screen">
           <Header locale={locale} />
           <main className="flex-1">
@@ -124,21 +135,16 @@ export default async function RootLayout({
           <Footer locale={locale} pathname={pathname} />
         </div>
         
-        {/* Umami Analytics */}
+        {/* Umami Analytics（无 Cookie，不记录工具内容） */}
         <Script
           defer
           src={siteConfig.analytics.umami.src}
           data-website-id={siteConfig.analytics.umami.websiteId}
           strategy="afterInteractive"
         />
-        
-        {/* Google AdSense */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3914969090265698"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+
+        {/* Google AdSense：仅在用户同意后加载 */}
+        <AdsScript clientId="ca-pub-3914969090265698" />
 
       </body>
     </html>

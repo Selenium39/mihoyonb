@@ -67,7 +67,7 @@ export const privacyContent: Record<Locale, LegalDoc> = {
       {
         heading: 'Cookie',
         paragraphs: [
-          '本站自身的页面不使用登录 Cookie，也没有账号体系；访问统计不使用 Cookie。广告合作方可能在你访问时设置 Cookie，用于频次控制、防欺诈与广告效果衡量。阻止第三方 Cookie 不会影响工具的核心功能，只会影响广告体验。',
+          '本站自身的页面不使用登录 Cookie，也没有账号体系；访问统计不使用 Cookie。广告合作方可能在你访问时设置 Cookie，用于频次控制、防欺诈与广告效果衡量。阻止第三方 Cookie 不会影响工具的核心功能，只会影响广告体验。你可以随时通过页脚的“Cookie 设置”重新选择或撤回同意。',
         ],
       },
       {
@@ -141,7 +141,7 @@ export const privacyContent: Record<Locale, LegalDoc> = {
       {
         heading: 'Cookies',
         paragraphs: [
-          'Our own pages do not use login cookies and we have no account system; our analytics does not use cookies. Advertising partners may set cookies when you visit, for frequency capping, fraud prevention and measurement. Blocking third-party cookies does not affect the core functionality of the tools; it only affects advertising.',
+          'Our own pages do not use login cookies and we have no account system; our analytics does not use cookies. Advertising partners may set cookies when you visit, for frequency capping, fraud prevention and measurement. Blocking third-party cookies does not affect the core functionality of the tools; it only affects advertising. You can review or withdraw your consent at any time through “Cookie settings” in the footer.',
         ],
       },
       {

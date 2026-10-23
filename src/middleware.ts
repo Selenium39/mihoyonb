@@ -14,6 +14,17 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-pathname', request.nextUrl.pathname)
 
+  // 尽力透传托管商的地理国家码，用于 EEA/UK/CH 的广告同意判断。
+  // 没有这些头时，客户端会退回时区/语言判断。
+  const country =
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    request.headers.get('x-country-code') ||
+    request.headers.get('x-geo-country')
+  if (country) {
+    requestHeaders.set('x-geo-country', country.toUpperCase())
+  }
+
   return NextResponse.next({
     request: {
       headers: requestHeaders,

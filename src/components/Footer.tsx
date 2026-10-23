@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/config/site'
 import { alternateLocalePath, getLocaleFromPathname, type Locale } from '@/lib/i18n'
+import { OPEN_CONSENT_EVENT } from '@/lib/consent'
 
 type FooterLink = { href: string; label: string }
 
@@ -18,6 +19,7 @@ const FOOTER_COPY = {
     quickNavHeading: '快捷导航',
     contactHeading: '联系我们',
     legalHeading: '法律条款',
+    cookieSettings: 'Cookie 设置',
     languageSwitch: 'English',
     languageSwitchAria: '切换到英文站',
     links: [
@@ -47,6 +49,7 @@ const FOOTER_COPY = {
     quickNavHeading: 'Tools',
     contactHeading: 'Contact',
     legalHeading: 'Legal',
+    cookieSettings: 'Cookie settings',
     languageSwitch: '中文',
     languageSwitchAria: 'Switch to the Chinese site',
     links: [
@@ -175,6 +178,13 @@ export function Footer({
                   {link.label}
                 </Link>
               ))}
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event(OPEN_CONSENT_EVENT))}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50 text-center md:text-left"
+              >
+                {copy.cookieSettings}
+              </button>
             </div>
           </div>
         </div>
