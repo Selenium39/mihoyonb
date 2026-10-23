@@ -124,7 +124,7 @@ src/
 - 语言判断与跳转统一走 `src/lib/i18n.ts`；根布局通过 `src/middleware.ts` 注入的 `x-pathname` 输出正确的 `<html lang>`
 - 中英页面互相声明 canonical / hreflang；新增英文页同时更新 `src/app/sitemap.ts`
 - 页面文案放在同目录 `copy.ts`（参考 `src/app/(pages)/pindou/copy.ts`）
-- 拼豆耗材的联盟配置在 `src/config/affiliate.ts`，填入 Amazon Associates tag 后链接自动带上
+- 拼豆耗材的联盟配置在 `src/config/affiliate.ts`，默认关闭（tag 为空时区块不渲染、不做 Associates 披露）；填入 tag 并重建后自动出现
 - 方向与约定见 `AGENTS.md`、`docs/decisions/2026-10-23-english-first.md`
 
 ## 部署

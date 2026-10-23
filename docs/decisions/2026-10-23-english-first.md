@@ -31,3 +31,9 @@
 1. 按“通用工具优先”逐个英文化：image-combine / image-split / markdown-to-image / video-frame / qr-code / subtitle-tools。
 2. 英文博客 / 教程内容、目录站提交（AlternativeTo、SaaSHub、Toolify）、Reddit / Product Hunt 分发。
 3. 视流量升级广告层（Ezoic/Media.net）与联盟组合。
+
+## 执行备注（2026-10-23，站主确认）
+
+- 当前**暂不填写 Amazon Associates tag**，`src/config/affiliate.ts` 保持空字符串；
+  `/en/pindou` 的 “Where to buy beads” 区块在 tag 为空时整体不渲染（避免虚假佣金披露），后续启用时只需填 tag 并重建。
+- 英文站先跑流量与 SEO，变现仍以 AdSense 为主。

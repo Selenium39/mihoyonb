@@ -28,7 +28,7 @@ import {
   type BeadPattern,
 } from '@/lib/bead-pattern'
 import { alternateLocalePath, type Locale } from '@/lib/i18n'
-import { affiliateConfig, amazonSearchUrl } from '@/config/affiliate'
+import { affiliateConfig, amazonSearchUrl, isAffiliateEnabled } from '@/config/affiliate'
 import { getPindouCopy } from './copy'
 import {
   Crop,
@@ -947,7 +947,7 @@ export default function PindouTool({ locale }: PindouToolProps) {
           </div>
         </div>
 
-        {locale === 'en' && (
+        {locale === 'en' && isAffiliateEnabled() && (
           <section className="mt-12">
             <Card>
               <CardHeader>
