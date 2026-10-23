@@ -1,137 +1,165 @@
-# 项目说明
+# mihoyonb
 
-「原牛」(mihoyonb.com) —— 基于 Next.js 的纯浏览器自媒体工具站。所有文件处理均在浏览器本地完成，不上传服务器，隐私安全。
+**English** | [简体中文](README.zh-CN.md)
 
-## 功能特性
+> Free, privacy-first browser tools for creators. No uploads, no accounts, no install.
 
-### 图片工具
+[Live site](https://mihoyonb.com) · [English site](https://mihoyonb.com/en) · [GitHub](https://github.com/Selenium39/mihoyonb)
 
-- 🧩 **图片拼接** (`/image-combine`): 多图在线拼接，支持多种布局与样式，自由调整间距、圆角和背景
-- ✂️ **长图切割** (`/image-split`): 长图按网格/切片切割，一键九宫格，批量导出
-- 🏷️ **图片加水印** (`/image-watermark`): 批量添加文字或图片水印，支持位置、透明度、旋转与平铺
-- 🖼️ **尺寸适配** (`/social-resize`): 一键适配公众号、小红书、抖音等平台封面尺寸，支持自定义宽高
-- 🔗 **二维码生成** (`/qr-code`): 自定义颜色与尺寸生成二维码，导出高清图片
+mihoyonb (原牛) is an open-source collection of client-side tools for images, video, text and social media. Every file is processed inside the browser tab — photos, videos and text never leave the user's device. The site is bilingual: Chinese at the root URLs and English under `/en`.
 
-### 视频工具
+## Tools
 
-- 🎬 **视频截帧** (`/video-frame`): 上传视频逐帧定位，精准截取画面并导出图片
+| Tool | Chinese | English | What it does |
+| --- | --- | --- | --- |
+| Perler Bead Pattern Generator | `/pindou` | `/en/pindou` | Converts a photo into a printable bead pattern with a 96-color reference palette, per-color bead counts, a high-resolution PNG blueprint and a CSV shopping list. |
+| Photo Collage | `/image-combine` | `/en/image-combine` | Combines multiple photos into one image with grid layouts, adjustable spacing, corner radius and background. |
+| Image Splitter | `/image-split` | `/en/image-split` | Splits long images into rows/columns or a 3×3 grid, with batch ZIP download. |
+| Image Watermark | `/image-watermark` | `/en/image-watermark` | Adds text or logo watermarks in bulk, with position, opacity, rotation and tiling controls. |
+| Social Media Image Resizer | `/social-resize` | `/en/social-resize` | Resizes one image for multiple platforms with cover/contain modes and custom dimensions. Chinese and English versions ship market-specific presets. |
+| Sensitive Word Checker | `/sensitive-words` | `/en/sensitive-words` | Scans copy for risky advertising claims, highlights matches and can mask them in one click. Chinese and English versions use separate, market-appropriate word lists. |
+| Markdown to Image | `/markdown-to-image` | `/en/markdown-to-image` | Renders Markdown into a shareable PNG with live preview and custom themes. |
+| QR Code Generator | `/qr-code` | `/en/qr-code` | Generates customizable QR codes with colors, a center logo and transparent-background export. |
+| Video Frame Extractor | `/video-frame` | `/en/video-frame` | Captures still frames from a video frame by frame, with keyboard shortcuts and single or batch export. |
+| Subtitle Converter | `/subtitle-tools` | `/en/subtitle-tools` | Converts SRT/VTT, shifts timing, merges subtitle files and cleans up formatting. |
 
-### 文案工具
+Legal pages are available at `/privacy`, `/terms` and `/en/privacy`, `/en/terms`.
 
-- 📝 **Markdown 转图片** (`/markdown-to-image`): Markdown 渲染导出为精美图片，适合公众号/社交媒体配图
-- 💬 **字幕工具** (`/subtitle-tools`): SRT/VTT 双向转换、时间轴平移、字幕合并与清理修复
-- 🛡️ **敏感词检测** (`/sensitive-words`): 内置广告法极限词与平台违规词双词库，检测高亮并一键遮罩
+## Why mihoyonb
 
-### 通用特性
+- **Private by design** — images, videos and text are processed with browser APIs such as Canvas; there is no upload endpoint and no server-side processing of user files.
+- **Bilingual by design** — every page has a Chinese and an English version, with canonical URLs, reciprocal `hreflang` tags, a shared sitemap and a language switcher in the header.
+- **Free and frictionless** — no account, no email, no paywall, no watermarks and no export quotas.
+- **Open source** — the full Next.js codebase is public and can be self-hosted.
+- **No backend required** — the tools work as a static/client-rendered app; no API keys or database are needed.
 
-- 📱 **响应式设计**: 完美适配桌面和移动设备
-- 🔒 **隐私安全**: 工具全部在浏览器端运行，文件不上传服务器，无需配置任何 API 密钥
+## Tech stack
 
-## 技术栈
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **UI:** React 18, Radix UI primitives, Tailwind CSS, Lucide icons
+- **Rendering/export:** html2canvas-pro, marked, qrcode, JSZip
+- **Package manager:** pnpm 10
 
-- **框架**: Next.js 14 (App Router)
-- **UI库**: Radix UI
-- **样式**: Tailwind CSS
-- **语言**: TypeScript
-- **图标**: Lucide React
-- **渲染/处理**: html2canvas-pro / marked / qrcode / jszip
+## Getting started
 
-## 快速开始
+### Requirements
 
-### 1. 安装依赖
+- Node.js 18.17 or newer
+- pnpm 10 (enable it with `corepack enable`)
+
+### Install and run
 
 ```bash
+git clone https://github.com/Selenium39/mihoyonb.git
+cd mihoyonb
+corepack enable
 pnpm install
-```
-
-### 2. 启动开发服务器
-
-```bash
 pnpm dev
 ```
 
-在浏览器中打开 [http://localhost:3000](http://localhost:3000) 查看应用。
+Open [http://localhost:3000](http://localhost:3000) for the Chinese site, or [http://localhost:3000/en](http://localhost:3000/en) for English.
 
-### 3. 构建生产版本
+### Production build
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-## 项目结构
+### Lint
 
+```bash
+pnpm lint
 ```
+
+## Project structure
+
+```text
 src/
-├── app/                        # Next.js App Router
-│   ├── (pages)/                # 功能页面
-│   │   ├── image-combine/      # 图片拼接
-│   │   ├── image-split/        # 长图切割
-│   │   ├── image-watermark/    # 图片加水印
-│   │   ├── social-resize/      # 尺寸适配
-│   │   ├── qr-code/            # 二维码生成
-│   │   ├── video-frame/        # 视频截帧
-│   │   ├── markdown-to-image/  # Markdown 转图片
-│   │   ├── subtitle-tools/     # 字幕工具
-│   │   ├── sensitive-words/    # 敏感词检测
-│   │   ├── privacy/            # 隐私政策
-│   │   └── terms/              # 服务条款
-│   ├── globals.css             # 全局样式
-│   ├── layout.tsx              # 根布局
-│   ├── robots.ts               # 爬虫协议
-│   └── sitemap.ts              # 站点地图
-├── components/                 # React 组件
-│   ├── ui/                     # UI 基础组件
-│   └── ...                     # Header/Footer 与工具页组件
+├── app/
+│   ├── (pages)/              # Chinese routes at the root
+│   │   ├── pindou/           # page.tsx + layout.tsx + copy.ts + tool component
+│   │   ├── image-combine/
+│   │   ├── image-split/
+│   │   ├── image-watermark/
+│   │   ├── social-resize/
+│   │   ├── sensitive-words/
+│   │   ├── markdown-to-image/
+│   │   ├── qr-code/
+│   │   ├── video-frame/
+│   │   ├── subtitle-tools/
+│   │   ├── privacy/
+│   │   └── terms/
+│   ├── en/                   # English routes under /en
+│   ├── layout.tsx            # Root layout, html lang and metadata
+│   ├── robots.ts
+│   └── sitemap.ts
+├── components/
+│   ├── HomePage.tsx          # Shared bilingual home layout
+│   ├── Header.tsx
+│   ├── Footer.tsx
+│   ├── LanguageSwitcher.tsx
+│   ├── LegalPage.tsx
+│   ├── ui/                   # Reusable UI primitives
+│   └── ...
 ├── config/
-│   └── site.ts                 # 品牌/域名/SEO 配置
-└── lib/                        # 工具核心逻辑（纯函数）
-    ├── image-split.ts          # 长图切割
-    ├── image-watermark.ts      # 水印合成
-    ├── markdown-poster.ts      # Markdown 海报样式
-    ├── wechat-themes.ts        # 公众号排版主题
-    ├── subtitle.ts             # 字幕解析/转换
-    ├── sensitive-words.ts      # 敏感词库与检测
-    └── utils.ts                # 通用工具函数
+│   ├── site.ts               # Brand, domain, SEO and social links
+│   ├── navigation.ts
+│   └── affiliate.ts          # Optional Amazon Associates configuration
+├── content/
+├── hooks/
+├── lib/                      # Framework-free tool logic
+│   ├── i18n.ts
+│   ├── bead-pattern.ts
+│   ├── bead-palette.ts
+│   ├── image-split.ts
+│   ├── image-watermark.ts
+│   ├── markdown-poster.ts
+│   ├── sensitive-words.ts
+│   ├── sensitive-words-en.ts
+│   ├── subtitle.ts
+│   └── ...
+├── middleware.ts             # Injects x-pathname for locale-aware layout
+└── ...
 ```
 
-## 开发
+Each tool keeps its copy in a local `copy.ts` and shares reusable controls (`CanvasToolbar`, `ImagePreview`, `MarkdownEditor`, etc.) with the rest of the site.
 
-### 添加新的 UI 组件
+## Internationalization
 
-本项目使用 Radix UI 作为基础组件库。要添加新的 UI 组件：
+- Chinese pages use the root paths (`/`, `/pindou`, …). English pages use `/en` (`/en`, `/en/pindou`, …).
+- `src/lib/i18n.ts` defines the locale type, translated path pairs, `localizedPath`, `alternateLocalePath` and hreflang values.
+- `src/middleware.ts` passes the current pathname to the root layout, which sets the correct `<html lang>`.
+- Every page declares its own canonical URL and reciprocal `hreflang` links (`en`, `zh-CN`, `x-default`), and is listed in `src/app/sitemap.ts`.
+- The header contains the language dropdown. A duplicate switch is intentionally not rendered in the footer.
+- UI copy lives in per-tool `copy.ts` files. Market-specific data sets are kept separate — for example, social media presets and the English sensitive-word library.
+- New pages should follow the English-first workflow described in [`AGENTS.md`](AGENTS.md) and the decision log in [`docs/decisions/`](docs/decisions/).
 
-1. 在 `src/components/ui/` 目录下创建新组件
-2. 基于 Radix UI 原语构建
-3. 使用 Tailwind CSS 进行样式定制
-4. 遵循现有的设计系统
+## Privacy and advertising
 
-### 自定义样式
+- User files are never uploaded. Image and video processing happens locally through Canvas, `URL.createObjectURL`, Web APIs and client-side libraries.
+- There are no accounts and no content tracking. The site uses cookieless Umami analytics for aggregate page views.
+- Advertising is served by Google AdSense. For visitors in the EEA, UK and Switzerland, ads are loaded only after consent through a custom consent banner and Google Consent Mode v2.
+- No API keys, environment variables or database are required to run the tools locally.
 
-- 主要颜色变量定义在 `src/app/globals.css` 中
-- 使用 CSS 变量支持深色模式
-- Tailwind 配置在 `tailwind.config.js` 中
+## Configuration
 
-### 站点配置
+| File | Purpose |
+| --- | --- |
+| `src/config/site.ts` | Brand name, domain, SEO defaults, logo and social links. |
+| `src/config/navigation.ts` | Header and footer navigation. |
+| `src/config/affiliate.ts` | Amazon Associates tag and bead-brand search terms. The affiliate block is hidden while the tag is empty. |
+| `src/lib/i18n.ts` | Locale routing and translated path pairs. |
+| `src/app/sitemap.ts` | Public URL inventory for both languages. |
 
-品牌、域名、SEO 等信息集中在 `src/config/site.ts`，修改该文件即可更换品牌。
+If you self-host the project, review the AdSense publisher ID and analytics configuration in `src/app/layout.tsx` and `src/components/AdsScript.tsx`, and use your own IDs.
 
-### 英文站与国际化
-
-英文站挂在 `/en` 前缀下，中文页保持原有 URL：
-
-- `/en`：英文落地页；`/en/pindou`：Perler Bead Pattern Generator（首个英文工具页）；`/en/privacy`、`/en/terms`：英文法律页（与中文版同口径）
-- 语言判断与跳转统一走 `src/lib/i18n.ts`；根布局通过 `src/middleware.ts` 注入的 `x-pathname` 输出正确的 `<html lang>`
-- 中英页面互相声明 canonical / hreflang；新增英文页同时更新 `src/app/sitemap.ts`
-- 页面文案放在同目录 `copy.ts`（参考 `src/app/(pages)/pindou/copy.ts`）
-- 拼豆耗材的联盟配置在 `src/config/affiliate.ts`，默认关闭（tag 为空时区块不渲染、不做 Associates 披露）；填入 tag 并重建后自动出现
-- 方向与约定见 `AGENTS.md`、`docs/decisions/2026-10-23-english-first.md`
-
-## 部署
+## Deployment
 
 ### Docker
 
-项目包含 `Dockerfile`，使用 `output: 'standalone'` 构建：
+The project uses Next.js `output: 'standalone'`.
 
 ```bash
 docker build -t mihoyonb .
@@ -140,10 +168,30 @@ docker run -p 3000:3000 mihoyonb
 
 ### Vercel
 
-1. 将代码推送到 GitHub
-2. 在 Vercel 中导入项目
-3. 自动部署
+1. Fork or push the repository to GitHub.
+2. Import the project in Vercel.
+3. Deploy with the default Next.js settings.
 
-## 许可证
+### Any Node.js host
 
-MIT License
+```bash
+pnpm install --frozen-lockfile
+pnpm build
+pnpm start
+```
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+1. Fork the repository and create a topic branch.
+2. Keep user-file processing client-side; do not add upload endpoints for photos, videos or text.
+3. Add both a Chinese page and an English page for new tools, including `copy.ts`, metadata, reciprocal hreflang and a sitemap entry.
+4. Run `pnpm lint` and `pnpm build` before opening a pull request.
+5. Never commit API keys, ad account IDs or other secrets.
+
+For project conventions, see [`AGENTS.md`](AGENTS.md).
+
+## License
+
+Released under the MIT License.
