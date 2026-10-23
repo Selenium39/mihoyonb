@@ -122,14 +122,14 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         '可打印高清 PNG 图纸',
         'CSV 拼豆采购清单',
       ],
-      href: '/pindou',
+      href: '/zh/pindou',
       cta: '生成拼豆图纸',
     },
     otherTools: [
       {
         title: '图片拼接',
         description: '多种网格布局，把多张照片拼成一张图，免费、不上传。',
-        href: '/image-combine',
+        href: '/zh/image-combine',
         icon: LayoutGrid,
         chipClass: 'bg-pink-100',
         iconClass: 'text-pink-600',
@@ -137,7 +137,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '长图切割',
         description: '把长图切成等宽切片或 3×3 九宫格，适合社交平台发布。',
-        href: '/image-split',
+        href: '/zh/image-split',
         icon: Scissors,
         chipClass: 'bg-orange-100',
         iconClass: 'text-orange-600',
@@ -145,7 +145,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '图片加水印',
         description: '批量添加文字或 Logo 水印，打包为一个 ZIP 下载。',
-        href: '/image-watermark',
+        href: '/zh/image-watermark',
         icon: Stamp,
         chipClass: 'bg-teal-100',
         iconClass: 'text-teal-600',
@@ -153,7 +153,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '尺寸适配',
         description: '一键适配 Instagram、X、LinkedIn、YouTube 等平台尺寸。',
-        href: '/social-resize',
+        href: '/zh/social-resize',
         icon: Scaling,
         chipClass: 'bg-rose-100',
         iconClass: 'text-rose-600',
@@ -161,7 +161,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '敏感词检测',
         description: '检测广告文案中的极限词与高风险表述，高亮并一键遮罩。',
-        href: '/sensitive-words',
+        href: '/zh/sensitive-words',
         icon: ShieldAlert,
         chipClass: 'bg-amber-100',
         iconClass: 'text-amber-600',
@@ -169,7 +169,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: 'Markdown 转图片',
         description: '把 Markdown 转成可分享的 PNG，支持实时预览与自定义主题。',
-        href: '/markdown-to-image',
+        href: '/zh/markdown-to-image',
         icon: FileText,
         chipClass: 'bg-indigo-100',
         iconClass: 'text-indigo-600',
@@ -177,7 +177,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '二维码生成',
         description: '自定义颜色、Logo 与透明背景，导出高清 PNG。',
-        href: '/qr-code',
+        href: '/zh/qr-code',
         icon: QrCode,
         chipClass: 'bg-emerald-100',
         iconClass: 'text-emerald-600',
@@ -185,7 +185,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '视频截帧',
         description: '在浏览器中从视频逐帧截取画面，支持单张或批量。',
-        href: '/video-frame',
+        href: '/zh/video-frame',
         icon: Film,
         chipClass: 'bg-purple-100',
         iconClass: 'text-purple-600',
@@ -193,7 +193,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: '字幕工具',
         description: 'SRT/VTT 互转、时间轴平移、合并与清理，全部本地完成。',
-        href: '/subtitle-tools',
+        href: '/zh/subtitle-tools',
         icon: Subtitles,
         chipClass: 'bg-blue-100',
         iconClass: 'text-blue-600',
@@ -284,14 +284,14 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         'Printable high-resolution PNG pattern',
         'CSV shopping list for bead shopping',
       ],
-      href: '/en/pindou',
+      href: '/pindou',
       cta: 'Create a bead pattern',
     },
     otherTools: [
       {
         title: 'Photo Collage',
         description: 'Combine photos into one image with grid layouts — free, no upload.',
-        href: '/en/image-combine',
+        href: '/image-combine',
         icon: LayoutGrid,
         chipClass: 'bg-pink-100',
         iconClass: 'text-pink-600',
@@ -300,7 +300,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         title: 'Image Splitter',
         description:
           'Split long images into equal slices or a 3×3 Instagram grid — free, no upload.',
-        href: '/en/image-split',
+        href: '/image-split',
         icon: Scissors,
         chipClass: 'bg-orange-100',
         iconClass: 'text-orange-600',
@@ -308,7 +308,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: 'Image Watermark',
         description: 'Batch text or logo watermarks on images, downloaded as one ZIP.',
-        href: '/en/image-watermark',
+        href: '/image-watermark',
         icon: Stamp,
         chipClass: 'bg-teal-100',
         iconClass: 'text-teal-600',
@@ -317,7 +317,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         title: 'Social Media Image Resizer',
         description:
           'Resize one image for Instagram, X, LinkedIn and YouTube in a click — free, no upload.',
-        href: '/en/social-resize',
+        href: '/social-resize',
         icon: Scaling,
         chipClass: 'bg-rose-100',
         iconClass: 'text-rose-600',
@@ -326,7 +326,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         title: 'Sensitive Word Checker',
         description:
           'Scan ad copy and posts for risky claims, with highlights and one-click masking.',
-        href: '/en/sensitive-words',
+        href: '/sensitive-words',
         icon: ShieldAlert,
         chipClass: 'bg-amber-100',
         iconClass: 'text-amber-600',
@@ -335,7 +335,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         title: 'Markdown to Image',
         description:
           'Turn Markdown into a shareable PNG with live preview and custom themes.',
-        href: '/en/markdown-to-image',
+        href: '/markdown-to-image',
         icon: FileText,
         chipClass: 'bg-indigo-100',
         iconClass: 'text-indigo-600',
@@ -343,7 +343,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         title: 'QR Code Generator',
         description: 'Free QR code generator with logo, colors, and transparent PNG export.',
-        href: '/en/qr-code',
+        href: '/qr-code',
         icon: QrCode,
         chipClass: 'bg-emerald-100',
         iconClass: 'text-emerald-600',
@@ -352,7 +352,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         title: 'Video Frame Extractor',
         description:
           'Capture still frames from any video in your browser, one by one or in bulk.',
-        href: '/en/video-frame',
+        href: '/video-frame',
         icon: Film,
         chipClass: 'bg-purple-100',
         iconClass: 'text-purple-600',
@@ -361,7 +361,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         title: 'Subtitle Converter',
         description:
           'Convert SRT to VTT, shift timing, merge and clean up subtitles locally.',
-        href: '/en/subtitle-tools',
+        href: '/subtitle-tools',
         icon: Subtitles,
         chipClass: 'bg-blue-100',
         iconClass: 'text-blue-600',

@@ -25,6 +25,9 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // 英文从 /en 迁到根路径；旧英文链接 301 到新的默认英文页
+      { source: '/en', destination: '/', statusCode: 301 },
+      { source: '/en/:path*', destination: '/:path*', statusCode: 301 },
       { source: '/blog/:path*', destination: '/', statusCode: 301 },
       { source: '/pan-search', destination: '/', statusCode: 301 },
       { source: '/video-watermark', destination: '/', statusCode: 301 },

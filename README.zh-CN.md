@@ -4,26 +4,26 @@
 
 > 免费、隐私优先的浏览器创作工具。不上传、不注册、不安装。
 
-[在线站点](https://mihoyonb.com) · [英文站](https://mihoyonb.com/en) · [GitHub](https://github.com/Selenium39/mihoyonb)
+[在线站点（英文）](https://mihoyonb.com) · [中文站](https://mihoyonb.com/zh) · [GitHub](https://github.com/Selenium39/mihoyonb)
 
-mihoyonb（原牛）是一个开源的纯前端工具集，覆盖图片、视频、文案与自媒体场景。所有文件都在浏览器标签页内处理，照片、视频和文字不会离开用户设备。站点为中英双语：中文使用根路径，英文放在 `/en` 下。
+mihoyonb（原牛）是一个开源的纯前端工具集，覆盖图片、视频、文案与自媒体场景。所有文件都在浏览器标签页内处理，照片、视频和文字不会离开用户设备。站点为中英双语：英文使用根路径（默认），中文放在 `/zh` 下。
 
 ## 工具列表
 
-| 工具 | 中文路径 | 英文路径 | 功能 |
+| 工具 | 英文路径 | 中文路径 | 功能 |
 | --- | --- | --- | --- |
-| 拼豆图纸生成器 | `/pindou` | `/en/pindou` | 把照片转成可打印拼豆图纸，匹配 96 色参考色号，统计每种颜色用量，导出高清 PNG 图纸和 CSV 采购清单。 |
-| 图片拼接 | `/image-combine` | `/en/image-combine` | 多种网格布局，把多张照片拼成一张图，可调间距、圆角和背景。 |
-| 长图切割 | `/image-split` | `/en/image-split` | 按行列或 3×3 九宫格切图，支持批量 ZIP 下载。 |
-| 图片加水印 | `/image-watermark` | `/en/image-watermark` | 批量添加文字或 Logo 水印，支持位置、透明度、旋转和平铺。 |
-| 尺寸适配 | `/social-resize` | `/en/social-resize` | 一键适配多个平台尺寸，支持居中裁切、完整保留和自定义宽高；中英文版使用各自市场的平台预设。 |
-| 敏感词检测 | `/sensitive-words` | `/en/sensitive-words` | 检测广告文案中的高风险表述，高亮标注并支持一键遮罩；中英文版使用各自市场的词库。 |
-| Markdown 转图片 | `/markdown-to-image` | `/en/markdown-to-image` | 把 Markdown 渲染成可分享的 PNG，支持实时预览和自定义主题。 |
-| 二维码生成 | `/qr-code` | `/en/qr-code` | 自定义颜色、中心 Logo 和透明背景，导出高清二维码。 |
-| 视频截帧 | `/video-frame` | `/en/video-frame` | 在浏览器中逐帧截取视频画面，支持快捷键和单张/批量导出。 |
-| 字幕工具 | `/subtitle-tools` | `/en/subtitle-tools` | SRT/VTT 互转、时间轴平移、字幕合并与清理。 |
+| 拼豆图纸生成器 | `/pindou` | `/zh/pindou` | 把照片转成可打印拼豆图纸，匹配 96 色参考色号，统计每种颜色用量，导出高清 PNG 图纸和 CSV 采购清单。 |
+| 图片拼接 | `/image-combine` | `/zh/image-combine` | 多种网格布局，把多张照片拼成一张图，可调间距、圆角和背景。 |
+| 长图切割 | `/image-split` | `/zh/image-split` | 按行列或 3×3 九宫格切图，支持批量 ZIP 下载。 |
+| 图片加水印 | `/image-watermark` | `/zh/image-watermark` | 批量添加文字或 Logo 水印，支持位置、透明度、旋转和平铺。 |
+| 尺寸适配 | `/social-resize` | `/zh/social-resize` | 一键适配多个平台尺寸，支持居中裁切、完整保留和自定义宽高；中英文版使用各自市场的平台预设。 |
+| 敏感词检测 | `/sensitive-words` | `/zh/sensitive-words` | 检测广告文案中的高风险表述，高亮标注并支持一键遮罩；中英文版使用各自市场的词库。 |
+| Markdown 转图片 | `/markdown-to-image` | `/zh/markdown-to-image` | 把 Markdown 渲染成可分享的 PNG，支持实时预览和自定义主题。 |
+| 二维码生成 | `/qr-code` | `/zh/qr-code` | 自定义颜色、中心 Logo 和透明背景，导出高清二维码。 |
+| 视频截帧 | `/video-frame` | `/zh/video-frame` | 在浏览器中逐帧截取视频画面，支持快捷键和单张/批量导出。 |
+| 字幕工具 | `/subtitle-tools` | `/zh/subtitle-tools` | SRT/VTT 互转、时间轴平移、字幕合并与清理。 |
 
-法律页：`/privacy`、`/terms`，英文版为 `/en/privacy`、`/en/terms`。
+法律页：英文为 `/privacy`、`/terms`，中文为 `/zh/privacy`、`/zh/terms`。
 
 ## 为什么是 mihoyonb
 
@@ -58,7 +58,7 @@ pnpm install
 pnpm dev
 ```
 
-中文站打开 [http://localhost:3000](http://localhost:3000)，英文站打开 [http://localhost:3000/en](http://localhost:3000/en)。
+英文站（默认）打开 [http://localhost:3000](http://localhost:3000)，中文站打开 [http://localhost:3000/zh](http://localhost:3000/zh)。
 
 ### 生产构建
 
@@ -78,21 +78,21 @@ pnpm lint
 ```text
 src/
 ├── app/
-│   ├── (pages)/              # 中文页面（根路径）
-│   │   ├── pindou/           # page.tsx + layout.tsx + copy.ts + 工具组件
-│   │   ├── image-combine/
-│   │   ├── image-split/
-│   │   ├── image-watermark/
-│   │   ├── social-resize/
-│   │   ├── sensitive-words/
-│   │   ├── markdown-to-image/
-│   │   ├── qr-code/
-│   │   ├── video-frame/
-│   │   ├── subtitle-tools/
-│   │   ├── privacy/
-│   │   └── terms/
-│   ├── en/                   # 英文页面（/en 前缀）
-│   ├── layout.tsx            # 根布局、html lang 与全局元数据
+│   ├── page.tsx             # 英文首页（默认，根路径）
+│   ├── pindou/              # 英文页面（根路径）
+│   ├── image-combine/
+│   ├── image-split/
+│   ├── image-watermark/
+│   ├── social-resize/
+│   ├── sensitive-words/
+│   ├── markdown-to-image/
+│   ├── qr-code/
+│   ├── video-frame/
+│   ├── subtitle-tools/
+│   ├── privacy/
+│   ├── terms/
+│   ├── zh/                  # 中文页面（/zh 前缀）
+│   ├── layout.tsx            # 英文根布局、html lang 与全局元数据
 │   ├── robots.ts
 │   └── sitemap.ts
 ├── components/
@@ -128,10 +128,10 @@ src/
 
 ## 国际化
 
-- 中文页面使用根路径（`/`、`/pindou` 等），英文页面使用 `/en`（`/en`、`/en/pindou` 等）。
-- `src/lib/i18n.ts` 定义语言类型、中英路径配对、`localizedPath`、`alternateLocalePath` 和 hreflang 值。
+- 英文页面使用根路径（`/`、`/pindou` 等）并作为默认语言，中文页面使用 `/zh`（`/zh`、`/zh/pindou` 等）。
+- `src/lib/i18n.ts` 定义语言类型、中英路径配对、`localizedPath`、`alternateLocalePath` 和 hreflang 值；`DEFAULT_LOCALE` 为 `en`。
 - `src/middleware.ts` 把当前路径传给根布局，由根布局输出正确的 `<html lang>`。
-- 每个页面声明自己的 canonical 和双向 `hreflang`（`en`、`zh-CN`、`x-default`），并登记到 `src/app/sitemap.ts`。
+- 每个页面声明自己的 canonical 和双向 `hreflang`（`en` = 根路径、`zh-CN` = `/zh`、`x-default` = 英文根路径），并登记到 `src/app/sitemap.ts`。
 - 语言切换入口在 Header 下拉菜单中；Footer 不再重复放置语言切换。
 - UI 文案放在各工具的 `copy.ts`。市场相关数据分开维护，例如尺寸预设和英文敏感词库。
 - 新增页面遵循 [`AGENTS.md`](AGENTS.md) 的英文优先约定，并参考 [`docs/decisions/`](docs/decisions/) 中的决策记录。

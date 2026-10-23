@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: #fff;
+    background:
+      radial-gradient(circle at 88% 12%, rgba(147, 197, 253, 0.28), transparent 42%),
+      radial-gradient(circle at 8% 92%, rgba(37, 99, 235, 0.55), transparent 46%),
+      linear-gradient(135deg, #1e3a8a 0%, #2563eb 52%, #3b82f6 100%);
+    position: relative;
+  }
+  /* 网格纹理 */
+  body::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .wrap {
+    position: relative; z-index: 1;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; gap: 44px;
+    padding: 0 56px;
+  }
+  /* 左列：占剩余宽度 */
+  .left { flex: 1; min-width: 0; }
+  .brand { display: flex; align-items: center; gap: 18px; margin-bottom: 30px; }
+  .brand svg { width: 84px; height: 84px; flex-shrink: 0; }
+  .brand-name { font-size: 52px; font-weight: 800; letter-spacing: 2px; white-space: nowrap; }
+  .brand-slogan {
+    margin-left: 2px; padding-left: 18px; border-left: 2px solid rgba(255,255,255,0.35);
+    font-size: 18px; color: rgba(255,255,255,0.85); letter-spacing: 1px; white-space: nowrap;
+  }
+  h1 {
+    font-size: 58px; font-weight: 800; line-height: 1.25; letter-spacing: 2px;
+    white-space: nowrap;
+    text-shadow: 0 4px 24px rgba(30, 58, 138, 0.45);
+  }
+  .chips { display: flex; gap: 12px; margin-top: 28px; }
+  .chip {
+    display: flex; align-items: center; gap: 7px; white-space: nowrap;
+    padding: 9px 17px; border-radius: 999px;
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.28);
+    font-size: 20px; font-weight: 500;
+  }
+  .domain {
+    display: inline-flex; align-items: center; gap: 10px; white-space: nowrap;
+    margin-top: 36px; padding: 12px 26px;
+    border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.55);
+    font-size: 26px; font-weight: 600; letter-spacing: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+  /* 右列：3×3 工具卡片（固定宽度，3×164 + 2×14 = 520） */
+  .grid {
+    flex-shrink: 0;
+    display: grid; grid-template-columns: repeat(3, 164px);
+    grid-auto-rows: 92px; gap: 14px;
+  }
+  .card {
+    border-radius: 18px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.26);
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
+  }
+  .card .icon { font-size: 32px; line-height: 1; }
+  .card .name { font-size: 17px; font-weight: 600; color: rgba(255,255,255,0.96); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="brand">
+      <svg viewBox="0 0 512 512">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0.82"/>
+          </linearGradient>
+        </defs>
+        <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+        <g>
+          <path d="M200 234 C 158 226 130 198 132 148" fill="none" stroke="#2563EB" stroke-width="30" stroke-linecap="round"/>
+          <path d="M312 234 C 354 226 382 198 380 148" fill="none" stroke="#2563EB" stroke-width="30" stroke-linecap="round"/>
+          <path d="M256 176 C 306 176 344 202 348 242 C 350 270 347 298 341 320 C 335 350 304 372 256 372 C 208 372 177 350 171 320 C 165 298 162 270 164 242 C 168 202 206 176 256 176 Z" fill="#2563EB"/>
+          <rect x="188" y="286" width="136" height="68" rx="34" fill="#BFDBFE"/>
+          <ellipse cx="226" cy="320" rx="8" ry="11" fill="#1E40AF"/>
+          <ellipse cx="286" cy="320" rx="8" ry="11" fill="#1E40AF"/>
+          <circle cx="218" cy="244" r="11" fill="#1E40AF"/>
+          <circle cx="294" cy="244" r="11" fill="#1E40AF"/>
+        </g>
+      </svg>
+      <div class="brand-name">原牛</div>
+      <div class="brand-slogan">一站式自媒体工具</div>
+    </div>
+    <h1>图片 · 文案 · 字幕<br>一站搞定</h1>
+    <div class="chips">
+      <div class="chip">🔒 纯本地处理</div>
+      <div class="chip">📤 文件不上传</div>
+      <div class="chip">🆓 完全免费</div>
+    </div>
+    <div class="domain">🌐 mihoyonb.com</div>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="icon">🧩</div><div class="name">图片拼接</div></div>
+    <div class="card"><div class="icon">📝</div><div class="name">Markdown转图片</div></div>
+    <div class="card"><div class="icon">✂️</div><div class="name">长图切割</div></div>
+    <div class="card"><div class="icon">🎬</div><div class="name">视频截帧</div></div>
+    <div class="card"><div class="icon">💧</div><div class="name">图片加水印</div></div>
+    <div class="card"><div class="icon">📐</div><div class="name">尺寸适配</div></div>
+    <div class="card"><div class="icon">🔳</div><div class="name">二维码生成</div></div>
+    <div class="card"><div class="icon">💬</div><div class="name">字幕工具</div></div>
+    <div class="card"><div class="icon">🛡️</div><div class="name">敏感词检测</div></div>
+  </div>
+</div>
+</body>
+</html>

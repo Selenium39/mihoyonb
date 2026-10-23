@@ -34,7 +34,7 @@ export const siteConfig = {
     ico: '/logo.ico',
     apple: '/logo-512x512.png',
     og: '/og.png',
-    ogEn: '/og-en.png',
+    ogZh: '/og-zh.png',
   },
   
   // 分析工具

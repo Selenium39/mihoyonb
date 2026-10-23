@@ -2,177 +2,47 @@ import { MetadataRoute } from 'next'
 import { siteConfig } from '@/config/site'
 
 /**
- * 站点地图：中文页保留原 URL，英文页统一挂在 /en 前缀下。
+ * 站点地图：英文为默认语言，使用根路径；中文统一挂在 /zh 前缀下。
  *
  * 关于 hreflang：Next 14.0.3 的 sitemap 序列化器只输出 loc/lastmod/changefreq/priority，
  * 不支持条目级 `alternates.languages`（MetadataRoute.Sitemap 类型里也没有该字段，
  * XML 端不会生成 <xhtml:link>）。因此中英互指统一放在各页面的 metadata.alternates.languages
  * （即 <head> 里的 hreflang，Google 官方支持的主要声明方式）：
- * - 首页：src/app/layout.tsx（zh-CN / en / x-default）
- * - /en：src/app/en/page.tsx
- * - /pindou 与 /en/pindou：各自页面的 layout.tsx
- * - /privacy 与 /en/privacy、/terms 与 /en/terms：各自页面的 layout.tsx
+ * - 首页：src/app/layout.tsx（en / zh-CN / x-default）
+ * - /zh：src/app/zh/layout.tsx
+ * - /pindou 与 /zh/pindou：各自页面的 layout.tsx
+ * - /privacy 与 /zh/privacy、/terms 与 /zh/terms：各自页面的 layout.tsx
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteConfig.domain
   const lastModified = new Date()
 
-  return [
-    {
-      url: baseUrl,
-      lastModified,
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/en`,
-      lastModified,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/image-combine`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/image-split`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/markdown-to-image`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/video-frame`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/image-watermark`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/social-resize`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/pindou`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/pindou`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/image-split`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/markdown-to-image`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/qr-code`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/subtitle-tools`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/image-combine`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/image-watermark`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/video-frame`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/social-resize`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/sensitive-words`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/qr-code`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/subtitle-tools`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/sensitive-words`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/terms`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/en/terms`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/en/privacy`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    }
+  const english = [
+    { path: '', priority: 1, changeFrequency: 'daily' as const },
+    { path: '/pindou', priority: 0.9, changeFrequency: 'weekly' as const },
+    { path: '/image-combine', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/image-split', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/image-watermark', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/social-resize', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/sensitive-words', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/markdown-to-image', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/qr-code', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/video-frame', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: '/subtitle-tools', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },
+    { path: '/terms', priority: 0.5, changeFrequency: 'monthly' as const },
   ]
+
+  const chinese = english.map((item) => ({
+    ...item,
+    path: item.path === '' ? '/zh' : `/zh${item.path}`,
+    priority: item.path === '' ? 0.8 : item.priority,
+  }))
+
+  return [...english, ...chinese].map((item) => ({
+    url: `${baseUrl}${item.path}`,
+    lastModified,
+    changeFrequency: item.changeFrequency,
+    priority: item.priority,
+  }))
 }

@@ -4,26 +4,26 @@
 
 > Free, privacy-first browser tools for creators. No uploads, no accounts, no install.
 
-[Live site](https://mihoyonb.com) · [English site](https://mihoyonb.com/en) · [GitHub](https://github.com/Selenium39/mihoyonb)
+[Live site (English)](https://mihoyonb.com) · [中文站](https://mihoyonb.com/zh) · [GitHub](https://github.com/Selenium39/mihoyonb)
 
-mihoyonb (原牛) is an open-source collection of client-side tools for images, video, text and social media. Every file is processed inside the browser tab — photos, videos and text never leave the user's device. The site is bilingual: Chinese at the root URLs and English under `/en`.
+mihoyonb (原牛) is an open-source collection of client-side tools for images, video, text and social media. Every file is processed inside the browser tab — photos, videos and text never leave the user's device. The site is bilingual: English at the root URLs (the default) and Chinese under `/zh`.
 
 ## Tools
 
-| Tool | Chinese | English | What it does |
+| Tool | English | Chinese | What it does |
 | --- | --- | --- | --- |
-| Perler Bead Pattern Generator | `/pindou` | `/en/pindou` | Converts a photo into a printable bead pattern with a 96-color reference palette, per-color bead counts, a high-resolution PNG blueprint and a CSV shopping list. |
-| Photo Collage | `/image-combine` | `/en/image-combine` | Combines multiple photos into one image with grid layouts, adjustable spacing, corner radius and background. |
-| Image Splitter | `/image-split` | `/en/image-split` | Splits long images into rows/columns or a 3×3 grid, with batch ZIP download. |
-| Image Watermark | `/image-watermark` | `/en/image-watermark` | Adds text or logo watermarks in bulk, with position, opacity, rotation and tiling controls. |
-| Social Media Image Resizer | `/social-resize` | `/en/social-resize` | Resizes one image for multiple platforms with cover/contain modes and custom dimensions. Chinese and English versions ship market-specific presets. |
-| Sensitive Word Checker | `/sensitive-words` | `/en/sensitive-words` | Scans copy for risky advertising claims, highlights matches and can mask them in one click. Chinese and English versions use separate, market-appropriate word lists. |
-| Markdown to Image | `/markdown-to-image` | `/en/markdown-to-image` | Renders Markdown into a shareable PNG with live preview and custom themes. |
-| QR Code Generator | `/qr-code` | `/en/qr-code` | Generates customizable QR codes with colors, a center logo and transparent-background export. |
-| Video Frame Extractor | `/video-frame` | `/en/video-frame` | Captures still frames from a video frame by frame, with keyboard shortcuts and single or batch export. |
-| Subtitle Converter | `/subtitle-tools` | `/en/subtitle-tools` | Converts SRT/VTT, shifts timing, merges subtitle files and cleans up formatting. |
+| Perler Bead Pattern Generator | `/pindou` | `/zh/pindou` | Converts a photo into a printable bead pattern with a 96-color reference palette, per-color bead counts, a high-resolution PNG blueprint and a CSV shopping list. |
+| Photo Collage | `/image-combine` | `/zh/image-combine` | Combines multiple photos into one image with grid layouts, adjustable spacing, corner radius and background. |
+| Image Splitter | `/image-split` | `/zh/image-split` | Splits long images into rows/columns or a 3×3 grid, with batch ZIP download. |
+| Image Watermark | `/image-watermark` | `/zh/image-watermark` | Adds text or logo watermarks in bulk, with position, opacity, rotation and tiling controls. |
+| Social Media Image Resizer | `/social-resize` | `/zh/social-resize` | Resizes one image for multiple platforms with cover/contain modes and custom dimensions. Chinese and English versions ship market-specific presets. |
+| Sensitive Word Checker | `/sensitive-words` | `/zh/sensitive-words` | Scans copy for risky advertising claims, highlights matches and can mask them in one click. Chinese and English versions use separate, market-appropriate word lists. |
+| Markdown to Image | `/markdown-to-image` | `/zh/markdown-to-image` | Renders Markdown into a shareable PNG with live preview and custom themes. |
+| QR Code Generator | `/qr-code` | `/zh/qr-code` | Generates customizable QR codes with colors, a center logo and transparent-background export. |
+| Video Frame Extractor | `/video-frame` | `/zh/video-frame` | Captures still frames from a video frame by frame, with keyboard shortcuts and single or batch export. |
+| Subtitle Converter | `/subtitle-tools` | `/zh/subtitle-tools` | Converts SRT/VTT, shifts timing, merges subtitle files and cleans up formatting. |
 
-Legal pages are available at `/privacy`, `/terms` and `/en/privacy`, `/en/terms`.
+Legal pages are available at `/privacy`, `/terms` (English) and `/zh/privacy`, `/zh/terms` (Chinese).
 
 ## Why mihoyonb
 
@@ -58,7 +58,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for the Chinese site, or [http://localhost:3000/en](http://localhost:3000/en) for English.
+Open [http://localhost:3000](http://localhost:3000) for the English site (default), or [http://localhost:3000/zh](http://localhost:3000/zh) for Chinese.
 
 ### Production build
 
@@ -78,21 +78,21 @@ pnpm lint
 ```text
 src/
 ├── app/
-│   ├── (pages)/              # Chinese routes at the root
-│   │   ├── pindou/           # page.tsx + layout.tsx + copy.ts + tool component
-│   │   ├── image-combine/
-│   │   ├── image-split/
-│   │   ├── image-watermark/
-│   │   ├── social-resize/
-│   │   ├── sensitive-words/
-│   │   ├── markdown-to-image/
-│   │   ├── qr-code/
-│   │   ├── video-frame/
-│   │   ├── subtitle-tools/
-│   │   ├── privacy/
-│   │   └── terms/
-│   ├── en/                   # English routes under /en
-│   ├── layout.tsx            # Root layout, html lang and metadata
+│   ├── page.tsx             # English home (default, root path)
+│   ├── pindou/              # English routes at the root
+│   ├── image-combine/
+│   ├── image-split/
+│   ├── image-watermark/
+│   ├── social-resize/
+│   ├── sensitive-words/
+│   ├── markdown-to-image/
+│   ├── qr-code/
+│   ├── video-frame/
+│   ├── subtitle-tools/
+│   ├── privacy/
+│   ├── terms/
+│   ├── zh/                  # Chinese routes under /zh
+│   ├── layout.tsx            # English root layout, html lang and metadata
 │   ├── robots.ts
 │   └── sitemap.ts
 ├── components/
@@ -128,10 +128,10 @@ Each tool keeps its copy in a local `copy.ts` and shares reusable controls (`Can
 
 ## Internationalization
 
-- Chinese pages use the root paths (`/`, `/pindou`, …). English pages use `/en` (`/en`, `/en/pindou`, …).
-- `src/lib/i18n.ts` defines the locale type, translated path pairs, `localizedPath`, `alternateLocalePath` and hreflang values.
+- English pages use the root paths (`/`, `/pindou`, …) and are the default. Chinese pages use `/zh` (`/zh`, `/zh/pindou`, …).
+- `src/lib/i18n.ts` defines the locale type, translated path pairs, `localizedPath`, `alternateLocalePath` and hreflang values; `DEFAULT_LOCALE` is `en`.
 - `src/middleware.ts` passes the current pathname to the root layout, which sets the correct `<html lang>`.
-- Every page declares its own canonical URL and reciprocal `hreflang` links (`en`, `zh-CN`, `x-default`), and is listed in `src/app/sitemap.ts`.
+- Every page declares its own canonical URL and reciprocal `hreflang` links (`en` = root, `zh-CN` = `/zh`, `x-default` = English root), and is listed in `src/app/sitemap.ts`.
 - The header contains the language dropdown. A duplicate switch is intentionally not rendered in the footer.
 - UI copy lives in per-tool `copy.ts` files. Market-specific data sets are kept separate — for example, social media presets and the English sensitive-word library.
 - New pages should follow the English-first workflow described in [`AGENTS.md`](AGENTS.md) and the decision log in [`docs/decisions/`](docs/decisions/).

@@ -18,22 +18,27 @@ export const dynamic = 'force-dynamic'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const SITE_TITLE = 'mihoyonb — Free Browser-Based Tools for Creators'
+const SITE_DESCRIPTION =
+  'Free, privacy-first browser tools: Perler bead patterns, photo collage, image splitter, watermark, social media image resizer, sensitive word checker, Markdown to image, QR codes, subtitles and video frames. No uploads, no signup.'
+const SITE_KEYWORDS =
+  'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, photo collage maker, image splitter, image watermark, social media image resizer, instagram image resizer, sensitive word checker, ad copy checker, markdown to image, qr code generator, subtitle converter, video frame extractor, privacy-first tools, no upload tools, no signup tools, client-side image tools'
+
 export const metadata: Metadata = {
-  title: siteConfig.title,
-  description: siteConfig.description,
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   alternates: {
     canonical: siteConfig.domain,
-    // 首页中英互指（其余页面在各页面自己的 layout 里声明，未翻译页面无需 hreflang）
     languages: {
-      'zh-CN': siteConfig.domain,
-      en: `${siteConfig.domain}/en`,
+      en: siteConfig.domain,
+      'zh-CN': `${siteConfig.domain}/zh`,
       'x-default': siteConfig.domain,
     },
   },
-  keywords: siteConfig.keywords,
+  keywords: SITE_KEYWORDS,
   authors: [{ name: siteConfig.author.name, url: siteConfig.author.twitterUrl }],
   creator: siteConfig.author.name,
-  publisher: siteConfig.name,
+  publisher: 'mihoyonb',
   formatDetection: {
     email: false,
     address: false,
@@ -41,25 +46,25 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(siteConfig.domain),
   openGraph: {
-    title: siteConfig.title,
-    description: siteConfig.description,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     url: siteConfig.domain,
-    siteName: siteConfig.name,
-    locale: 'zh_CN',
+    siteName: 'mihoyonb',
+    locale: 'en_US',
     type: 'website',
     images: [
       {
         url: siteConfig.logo.og,
         width: 1200,
         height: 630,
-        alt: siteConfig.title,
+        alt: SITE_TITLE,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: siteConfig.title,
-    description: siteConfig.description,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     creator: siteConfig.author.twitter,
     images: [siteConfig.logo.og],
   },
@@ -77,7 +82,7 @@ export const metadata: Metadata = {
   verification: {
     // 如果你有的话，可以添加搜索引擎验证码
     // google: 'your-google-verification-code',
-    // baidu: 'your-baidu-verification-code',
+    // baidu: 'your-baidu-verification-code'
   },
   icons: {
     icon: siteConfig.logo.ico,
@@ -98,14 +103,13 @@ export const metadata: Metadata = {
     ],
   },
 }
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // 语言由 middleware 注入的 x-pathname 决定：/en 前缀 -> en，其余 -> zh。
-  // 直接取不到时按键兜底为中文（默认语言）。
+  // 语言由 middleware 注入的 x-pathname 决定：/zh 前缀 -> zh，其余 -> en。
+  // 直接取不到时兜底为英文（默认语言）。
   const pathname = headers().get('x-pathname') || '/'
   const locale = getLocaleFromPathname(pathname)
   const geoCountry = headers().get('x-geo-country')

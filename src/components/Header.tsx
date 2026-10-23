@@ -12,7 +12,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 /**
  * 站点外壳文案：中英各一份。
- * 英文版只展示 /en 下已上线的英文页面，不展示中文工具链接。
+ * 英文版只展示已上线的英文页面，不展示中文工具链接。
  */
 const HEADER_COPY = {
   zh: {
@@ -43,13 +43,13 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
   const copy = HEADER_COPY[locale]
   const isEn = locale === 'en'
 
-  const homeHref = isEn ? '/en' : '/'
+  const homeHref = isEn ? '/' : '/zh'
 
   // 英文站导航（只列已上线页面）
   const enLinks: { href: string; label: string }[] = [
-    { href: '/en', label: copy.home },
-    { href: '/en/pindou', label: 'Bead Patterns' },
-    { href: '/en#tools', label: copy.allTools },
+    { href: '/', label: copy.home },
+    { href: '/pindou', label: 'Bead Patterns' },
+    { href: '/#tools', label: copy.allTools },
   ]
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -62,7 +62,7 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
 
   // 当前路由是否激活（首页需精确匹配，工具页按前缀匹配）
   const isActive = (href: string) =>
-    href === '/' || href === '/en' ? pathname === href : pathname.startsWith(href)
+    href === '/' || href === '/zh' ? pathname === href : pathname.startsWith(href)
 
   const navLinkClass = (active: boolean) =>
     `text-sm font-medium transition-colors ${
@@ -115,7 +115,7 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
               ))
             ) : (
               <>
-                <Link href="/" className={navLinkClass(isActive('/'))}>
+                <Link href="/zh" className={navLinkClass(isActive('/zh'))}>
                   {copy.home}
                 </Link>
                 {NAV_GROUPS.map((group) => {
@@ -255,7 +255,7 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
               <>
                 <div className="flex flex-col space-y-1">
                   <Link
-                    href="/"
+                    href="/zh"
                     className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md px-3 py-2.5 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >

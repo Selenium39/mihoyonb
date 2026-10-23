@@ -5,7 +5,7 @@
  * 不是任何品牌的官方色卡，也未从 GPL/AGPL 项目拷贝色值表。
  * 实物珠子有批次色差，采购前请用品牌色卡核对。
  *
- * 中文名/色系用于 /pindou，nameEn/familyEn 用于 /en/pindou。
+ * 中文名/色系用于 /zh/pindou，nameEn/familyEn 用于 /pindou。
  */
 
 export interface Lab {

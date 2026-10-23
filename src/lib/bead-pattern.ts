@@ -793,8 +793,8 @@ export function renderBeadPattern(
     ctx.fillStyle = '#888888'
     ctx.fillText(
       en
-        ? 'mihoyonb.com/en/pindou · Free · Generated locally in your browser · Image never uploaded'
-        : '原牛 mihoyonb.com/pindou · 免费 · 浏览器本地生成 · 图片不上传',
+        ? 'mihoyonb.com/pindou · Free · Generated locally in your browser · Image never uploaded'
+        : '原牛 mihoyonb.com/zh/pindou · 免费 · 浏览器本地生成 · 图片不上传',
       pad,
       canvas.height - pad - Math.round(4 * pixelRatio),
     )

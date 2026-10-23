@@ -22,7 +22,7 @@ const COPY = {
     accept: '全部接受',
     reject: '仅必要',
     privacy: '隐私政策',
-    privacyHref: '/privacy',
+    privacyHref: '/zh/privacy',
     dialogLabel: 'Cookie 同意',
   },
   en: {
@@ -31,7 +31,7 @@ const COPY = {
     accept: 'Accept all',
     reject: 'Essential only',
     privacy: 'Privacy Policy',
-    privacyHref: '/en/privacy',
+    privacyHref: '/privacy',
     dialogLabel: 'Cookie consent',
   },
 } as const

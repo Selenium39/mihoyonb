@@ -20,8 +20,8 @@ import { cn } from '@/lib/utils'
 /**
  * 语言切换下拉：全站统一入口。
  *
- * - 中文在根路径、英文在 /en；选项只有两个，但用下拉避免误触，也方便以后扩展。
- * - header / mobile / footer / inline 四种外观，语义与跳转逻辑一致。
+ * - 英文在根路径、中文在 /zh；选项只有两个，但用下拉避免误触，也方便以后扩展。
+ * - header / mobile / inline 三种外观，语义与跳转逻辑一致。
  * - 当前页面若尚未翻译，alternateLocalePath 会回落到对应语言首页。
  */
 const LANGUAGE_LABELS: Record<Locale, string> = {

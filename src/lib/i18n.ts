@@ -1,5 +1,5 @@
 /**
- * 轻量 i18n 契约：中文在根路径，英文在 /en 前缀下。
+ * 轻量 i18n 契约：英文在根路径（默认），中文在 /zh 前缀下。
  *
  * 不引入第三方 i18n 库；页面级文案放在各页面目录的 copy.ts 里，
  * 路由/语言判断统一走这里，避免各页面各写一套。
@@ -7,38 +7,38 @@
 
 export type Locale = 'zh' | 'en'
 
-export const DEFAULT_LOCALE: Locale = 'zh'
+export const DEFAULT_LOCALE: Locale = 'en'
 export const LOCALES: readonly Locale[] = ['zh', 'en']
 
 /** 已翻译的页面配对（中文路径 <-> 英文路径），语言切换只在这些页面间互跳 */
 export const TRANSLATED_PAIRS: ReadonlyArray<readonly [string, string]> = [
-  ['/pindou', '/en/pindou'],
-  ['/image-split', '/en/image-split'],
-  ['/image-combine', '/en/image-combine'],
-  ['/image-watermark', '/en/image-watermark'],
-  ['/markdown-to-image', '/en/markdown-to-image'],
-  ['/qr-code', '/en/qr-code'],
-  ['/video-frame', '/en/video-frame'],
-  ['/subtitle-tools', '/en/subtitle-tools'],
-  ['/social-resize', '/en/social-resize'],
-  ['/sensitive-words', '/en/sensitive-words'],
-  ['/privacy', '/en/privacy'],
-  ['/terms', '/en/terms'],
+  ['/zh/pindou', '/pindou'],
+  ['/zh/image-split', '/image-split'],
+  ['/zh/image-combine', '/image-combine'],
+  ['/zh/image-watermark', '/image-watermark'],
+  ['/zh/markdown-to-image', '/markdown-to-image'],
+  ['/zh/qr-code', '/qr-code'],
+  ['/zh/video-frame', '/video-frame'],
+  ['/zh/subtitle-tools', '/subtitle-tools'],
+  ['/zh/social-resize', '/social-resize'],
+  ['/zh/sensitive-words', '/sensitive-words'],
+  ['/zh/privacy', '/privacy'],
+  ['/zh/terms', '/terms'],
 ]
 
-export function isEnglishPath(pathname: string): boolean {
-  return pathname === '/en' || pathname.startsWith('/en/')
+export function isChinesePath(pathname: string): boolean {
+  return pathname === '/zh' || pathname.startsWith('/zh/')
 }
 
 export function getLocaleFromPathname(pathname: string): Locale {
-  return isEnglishPath(pathname) ? 'en' : 'zh'
+  return isChinesePath(pathname) ? 'zh' : 'en'
 }
 
-export function localePrefix(locale: Locale): '' | '/en' {
-  return locale === 'en' ? '/en' : ''
+export function localePrefix(locale: Locale): '' | '/zh' {
+  return locale === 'zh' ? '/zh' : ''
 }
 
-/** 给根路径或站内路径加上语言前缀（中文返回原路径） */
+/** 给站内路径加上语言前缀（英文返回原路径，中文加 /zh） */
 export function localizedPath(locale: Locale, path: string): string {
   const normalized = path === '/' || path === '' ? '' : path.startsWith('/') ? path : `/${path}`
   return `${localePrefix(locale)}${normalized}` || '/'
@@ -50,9 +50,9 @@ export function alternateLocalePath(pathname: string): string {
     if (pathname === zhPath) return enPath
     if (pathname === enPath) return zhPath
   }
-  if (pathname === '/') return '/en'
-  if (pathname === '/en') return '/'
-  return isEnglishPath(pathname) ? '/' : '/en'
+  if (pathname === '/') return '/zh'
+  if (pathname === '/zh') return '/'
+  return isChinesePath(pathname) ? '/' : '/zh'
 }
 
 /** hreflang / sitemap 用的语言标签 */
