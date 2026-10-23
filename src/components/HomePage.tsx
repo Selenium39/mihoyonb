@@ -19,7 +19,9 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { AdSlot } from '@/components/AdSlot'
 import { siteConfig } from '@/config/site'
+import { AD_SLOT_HOME_BOTTOM } from '@/config/ads'
 import type { Locale } from '@/lib/i18n'
 
 type HomeTool = {
@@ -481,22 +483,6 @@ export function HomePage({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-8 md:py-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <h2 className="text-lg font-semibold text-foreground flex-shrink-0">
-              {copy.privacyHeading}
-            </h2>
-            <div className="h-px flex-1 bg-border" aria-hidden="true" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {copy.privacyPoints.map((point) => (
-              <PrivacyPointCard key={point.title} point={point} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="tools" className="container mx-auto px-4 py-8 md:py-10 scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
@@ -546,32 +532,51 @@ export function HomePage({ locale }: { locale: Locale }) {
             {copy.otherTools.map((tool) => {
               const Icon = tool.icon
               return (
-                <Card key={tool.href} className="h-full hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-3 text-base">
-                      <div
-                        className={`w-9 h-9 ${tool.chipClass} rounded-lg flex items-center justify-center flex-shrink-0`}
-                      >
-                        <Icon className={`w-4 h-4 ${tool.iconClass}`} />
-                      </div>
-                      <span>{tool.title}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {tool.description}
-                    </p>
-                    <Link
-                      href={tool.href}
-                      className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-primary hover:underline"
-                    >
-                      {copy.toolsCta}
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </CardContent>
-                </Card>
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  className="block h-full rounded-xl group/card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <Card className="h-full hover:shadow-md transition-shadow">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-3 text-base">
+                        <div
+                          className={`w-9 h-9 ${tool.chipClass} rounded-lg flex items-center justify-center flex-shrink-0`}
+                        >
+                          <Icon className={`w-4 h-4 ${tool.iconClass}`} />
+                        </div>
+                        <span>{tool.title}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {tool.description}
+                      </p>
+                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-primary group-hover/card:underline">
+                        {copy.toolsCta}
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </CardContent>
+                  </Card>
+                </Link>
               )
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-8 md:py-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-4 mb-6">
+            <h2 className="text-lg font-semibold text-foreground flex-shrink-0">
+              {copy.privacyHeading}
+            </h2>
+            <div className="h-px flex-1 bg-border" aria-hidden="true" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {copy.privacyPoints.map((point) => (
+              <PrivacyPointCard key={point.title} point={point} />
+            ))}
           </div>
         </div>
       </section>
@@ -615,6 +620,13 @@ export function HomePage({ locale }: { locale: Locale }) {
             </Button>
           </div>
         </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-10">
+        <AdSlot
+          slot={AD_SLOT_HOME_BOTTOM}
+          label={locale === 'zh' ? '广告' : 'Advertisement'}
+        />
       </section>
     </div>
   )
