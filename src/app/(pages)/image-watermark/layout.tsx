@@ -1,17 +1,26 @@
 import type { Metadata } from 'next'
 import { siteConfig, getPageTitle, getPageUrl } from '@/config/site'
+import { hreflang } from '@/lib/i18n'
+
+const ZH_URL = getPageUrl('/image-watermark')
+const EN_URL = getPageUrl('/en/image-watermark')
 
 export const metadata: Metadata = {
   title: getPageTitle(siteConfig.pages.imageWatermark.title),
   description: siteConfig.pages.imageWatermark.description,
   alternates: {
-    canonical: getPageUrl('/image-watermark'),
+    canonical: ZH_URL,
+    languages: {
+      [hreflang('zh')]: ZH_URL,
+      [hreflang('en')]: EN_URL,
+      'x-default': ZH_URL,
+    },
   },
   keywords: siteConfig.pages.imageWatermark.keywords,
   openGraph: {
     title: getPageTitle(siteConfig.pages.imageWatermark.title),
     description: siteConfig.pages.imageWatermark.description,
-    url: getPageUrl('/image-watermark'),
+    url: ZH_URL,
     siteName: siteConfig.name,
     locale: 'zh_CN',
     type: 'website',

@@ -1,6 +1,7 @@
 // 微信公众号排版主题：所有样式逐元素内联（写在每个元素的 style 属性上）
 // 微信编辑器粘贴时会剥离 class 与 <style> 标签，只有内联样式能保留
 import { renderMarkdown } from '@/lib/markdown-poster'
+import type { Locale } from '@/lib/i18n'
 
 export type WechatThemeId = 'classicBlue' | 'warmOrange' | 'minimalGray'
 
@@ -330,6 +331,18 @@ const minimalGray = makeWechatTheme(
 )
 
 export const wechatThemes: WechatTheme[] = [classicBlue, warmOrange, minimalGray]
+
+// 英文版主题名与说明：只本地化 label/desc，样式与 swatch 完全复用中文版
+const WECHAT_THEME_COPY_EN: Record<WechatThemeId, { label: string; desc: string }> = {
+  classicBlue: { label: 'Classic blue', desc: 'Blue accent headings · clean and professional' },
+  warmOrange: { label: 'Warm orange', desc: 'Orange underlined headings · warm and lively' },
+  minimalGray: { label: 'Minimal gray', desc: 'No decoration · quiet and easy to read' },
+}
+
+export function getWechatThemes(locale: Locale = 'zh'): WechatTheme[] {
+  if (locale !== 'en') return wechatThemes
+  return wechatThemes.map((theme) => ({ ...theme, ...WECHAT_THEME_COPY_EN[theme.id] }))
+}
 
 export function getWechatTheme(id: WechatThemeId): WechatTheme {
   return wechatThemes.find((t) => t.id === id) ?? classicBlue

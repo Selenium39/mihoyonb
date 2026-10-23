@@ -15,12 +15,96 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Palette, Type, Layout, Smartphone } from 'lucide-react'
 import {
   getSizePreset,
-  sizePresetOptions,
-  posterThemeOptions,
+  getSizePresetOptions,
+  getPosterThemeOptions,
   type PosterSettings,
   type SizePreset,
   type PosterTheme
 } from '@/lib/markdown-poster'
+import type { Locale } from '@/lib/i18n'
+
+/**
+ * 设置对话框文案：默认中文，英文页传 locale="en"。
+ * 中文保持原有字面量不变。
+ */
+const DIALOG_COPY = {
+  zh: {
+    title: '自定义设置',
+    description: '调整背景、字体和布局来创建独特的图片样式',
+    backgroundSection: '背景设置',
+    presets: '预设背景',
+    customGradient: '自定义渐变',
+    startColor: '起始颜色',
+    endColor: '结束颜色',
+    direction: '渐变方向',
+    directions: {
+      '135deg': '左上到右下',
+      '45deg': '左下到右上',
+      '0deg': '左到右',
+      '90deg': '上到下',
+      '180deg': '右到左',
+      '270deg': '下到上',
+    },
+    textSection: '文字设置',
+    fontSize: '文字大小',
+    layoutSection: '布局设置',
+    padding: '卡片边距',
+    width: '整体宽度',
+    widthLocked: (width: number) => `${width}px（预设锁定）`,
+    presetWidthHint: '小红书预设使用 1080px 宽度，切换回「自由宽度」可手动调整',
+    canvasSection: '画布与主题',
+    canvasSize: '画布尺寸',
+    posterTheme: '排版主题',
+    presetCanvasNote: (hint: string) => ` · 预设画布 ${hint}，高度为最小高度，内容超出自动撑开`,
+    headingSize: '标题字号',
+    headingScales: {
+      '1': '标准',
+      '1.15': '放大 15%',
+      '1.3': '超大 30%',
+    },
+    cancel: '取消',
+    apply: '应用设置',
+  },
+  en: {
+    title: 'Customize',
+    description: 'Adjust the background, fonts and layout to create your own poster style.',
+    backgroundSection: 'Background',
+    presets: 'Background presets',
+    customGradient: 'Custom gradient',
+    startColor: 'Start color',
+    endColor: 'End color',
+    direction: 'Direction',
+    directions: {
+      '135deg': 'Top left → bottom right',
+      '45deg': 'Bottom left → top right',
+      '0deg': 'Left → right',
+      '90deg': 'Top → bottom',
+      '180deg': 'Right → left',
+      '270deg': 'Bottom → top',
+    },
+    textSection: 'Text',
+    fontSize: 'Font size',
+    layoutSection: 'Layout',
+    padding: 'Card padding',
+    width: 'Canvas width',
+    widthLocked: (width: number) => `${width}px (locked by preset)`,
+    presetWidthHint:
+      'The 3:4 preset uses a fixed 1080px width. Switch back to “Custom width” to adjust it manually.',
+    canvasSection: 'Canvas & theme',
+    canvasSize: 'Canvas size',
+    posterTheme: 'Poster theme',
+    presetCanvasNote: (hint: string) =>
+      ` · Preset canvas ${hint}. This is the minimum height — content expands it as needed.`,
+    headingSize: 'Heading size',
+    headingScales: {
+      '1': 'Standard',
+      '1.15': 'Large (+15%)',
+      '1.3': 'Extra large (+30%)',
+    },
+    cancel: 'Cancel',
+    apply: 'Apply settings',
+  },
+} as const
 
 interface CustomizeDialogProps {
   open: boolean
@@ -28,6 +112,7 @@ interface CustomizeDialogProps {
   settings: PosterSettings
   onSettingsChange: (settings: any) => void
   backgroundPresets: Record<string, string>
+  locale?: Locale
 }
 
 export function CustomizeDialog({
@@ -35,8 +120,12 @@ export function CustomizeDialog({
   onOpenChange,
   settings,
   onSettingsChange,
-  backgroundPresets
+  backgroundPresets,
+  locale = 'zh',
 }: CustomizeDialogProps) {
+  const copy = DIALOG_COPY[locale]
+  const sizePresetList = getSizePresetOptions(locale)
+  const posterThemeList = getPosterThemeOptions(locale)
   const [tempSettings, setTempSettings] = useState(settings)
 
   useEffect(() => {
@@ -65,8 +154,8 @@ export function CustomizeDialog({
 
   // 切换排版主题：若背景仍是上一主题的推荐背景则跟随切换，不影响用户自定义背景
   const handleThemeChange = (value: string) => {
-    const prev = posterThemeOptions.find((t) => t.value === (tempSettings.theme ?? 'classic'))
-    const next = posterThemeOptions.find((t) => t.value === value)
+    const prev = posterThemeList.find((t) => t.value === (tempSettings.theme ?? 'classic'))
+    const next = posterThemeList.find((t) => t.value === value)
     const patch: PosterSettings = { ...tempSettings, theme: value as PosterTheme }
     if (
       prev &&
@@ -83,9 +172,9 @@ export function CustomizeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>自定义设置</DialogTitle>
+          <DialogTitle>{copy.title}</DialogTitle>
           <DialogDescription>
-            调整背景、字体和布局来创建独特的图片样式
+            {copy.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -94,12 +183,12 @@ export function CustomizeDialog({
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Palette className="w-4 h-4" />
-              <h3 className="font-semibold">背景设置</h3>
+              <h3 className="font-semibold">{copy.backgroundSection}</h3>
             </div>
 
             {/* 预设背景 */}
             <div>
-              <Label>预设背景</Label>
+              <Label>{copy.presets}</Label>
               <div className="grid grid-cols-4 gap-2 mt-2">
                 {Object.entries(backgroundPresets).map(([key, value]) => (
                   <button
@@ -120,10 +209,10 @@ export function CustomizeDialog({
 
             {/* 自定义渐变 */}
             <div className="space-y-3">
-              <Label>自定义渐变</Label>
+              <Label>{copy.customGradient}</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-xs">起始颜色</Label>
+                  <Label className="text-xs">{copy.startColor}</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       type="color"
@@ -146,7 +235,7 @@ export function CustomizeDialog({
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs">结束颜色</Label>
+                  <Label className="text-xs">{copy.endColor}</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       type="color"
@@ -170,7 +259,7 @@ export function CustomizeDialog({
                 </div>
               </div>
               <div>
-                <Label className="text-xs">渐变方向</Label>
+                <Label className="text-xs">{copy.direction}</Label>
                 <Select
                   value={tempSettings.customGradient.direction}
                   onValueChange={(value) =>
@@ -188,12 +277,12 @@ export function CustomizeDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="135deg">左上到右下</SelectItem>
-                    <SelectItem value="45deg">左下到右上</SelectItem>
-                    <SelectItem value="0deg">左到右</SelectItem>
-                    <SelectItem value="90deg">上到下</SelectItem>
-                    <SelectItem value="180deg">右到左</SelectItem>
-                    <SelectItem value="270deg">下到上</SelectItem>
+                    <SelectItem value="135deg">{copy.directions['135deg']}</SelectItem>
+                    <SelectItem value="45deg">{copy.directions['45deg']}</SelectItem>
+                    <SelectItem value="0deg">{copy.directions['0deg']}</SelectItem>
+                    <SelectItem value="90deg">{copy.directions['90deg']}</SelectItem>
+                    <SelectItem value="180deg">{copy.directions['180deg']}</SelectItem>
+                    <SelectItem value="270deg">{copy.directions['270deg']}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -204,11 +293,11 @@ export function CustomizeDialog({
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Type className="w-4 h-4" />
-              <h3 className="font-semibold">文字设置</h3>
+              <h3 className="font-semibold">{copy.textSection}</h3>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>文字大小</Label>
+                <Label>{copy.fontSize}</Label>
                 <span className="text-sm text-muted-foreground">
                   {tempSettings.fontSize}px
                 </span>
@@ -230,14 +319,16 @@ export function CustomizeDialog({
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Layout className="w-4 h-4" />
-              <h3 className="font-semibold">布局设置</h3>
+              <h3 className="font-semibold">{copy.layoutSection}</h3>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>整体宽度</Label>
+                <Label>{copy.width}</Label>
                 <span className="text-sm text-muted-foreground">
                   {getSizePreset(tempSettings.sizePreset).width !== undefined
-                    ? `${getSizePreset(tempSettings.sizePreset).width}px（预设锁定）`
+                    ? copy.widthLocked(
+                        getSizePreset(tempSettings.sizePreset).width ?? tempSettings.width
+                      )
                     : `${tempSettings.width}px`}
                 </span>
               </div>
@@ -256,13 +347,13 @@ export function CustomizeDialog({
               />
               {getSizePreset(tempSettings.sizePreset).width !== undefined && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  小红书预设使用 1080px 宽度，切换回「自由宽度」可手动调整
+                  {copy.presetWidthHint}
                 </p>
               )}
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>卡片边距</Label>
+                <Label>{copy.padding}</Label>
                 <span className="text-sm text-muted-foreground">
                   {tempSettings.padding}px
                 </span>
@@ -284,11 +375,11 @@ export function CustomizeDialog({
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Smartphone className="w-4 h-4" />
-              <h3 className="font-semibold">画布与主题</h3>
+              <h3 className="font-semibold">{copy.canvasSection}</h3>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>画布尺寸</Label>
+                <Label>{copy.canvasSize}</Label>
                 <Select
                   value={tempSettings.sizePreset ?? 'custom'}
                   onValueChange={handleSizePresetChange}
@@ -297,7 +388,7 @@ export function CustomizeDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {sizePresetOptions.map((o) => (
+                    {sizePresetList.map((o) => (
                       <SelectItem key={o.value} value={o.value}>
                         {o.label} · {o.hint}
                       </SelectItem>
@@ -306,7 +397,7 @@ export function CustomizeDialog({
                 </Select>
               </div>
               <div>
-                <Label>排版主题</Label>
+                <Label>{copy.posterTheme}</Label>
                 <Select
                   value={tempSettings.theme ?? 'classic'}
                   onValueChange={handleThemeChange}
@@ -315,7 +406,7 @@ export function CustomizeDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {posterThemeOptions.map((t) => (
+                    {posterThemeList.map((t) => (
                       <SelectItem key={t.value} value={t.value}>
                         {t.label}
                       </SelectItem>
@@ -325,14 +416,17 @@ export function CustomizeDialog({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              {posterThemeOptions.find((t) => t.value === (tempSettings.theme ?? 'classic'))?.desc}
+              {posterThemeList.find((t) => t.value === (tempSettings.theme ?? 'classic'))?.desc}
               {(tempSettings.sizePreset ?? 'custom') !== 'custom' &&
-                ` · 预设画布 ${getSizePreset(tempSettings.sizePreset).hint}，高度为最小高度，内容超出自动撑开`}
+                copy.presetCanvasNote(
+                  (sizePresetList.find((o) => o.value === tempSettings.sizePreset) ??
+                    sizePresetList[0]).hint
+                )}
             </p>
             {/* 小红书主题的轻量定制：标题字号放大 */}
             {(tempSettings.theme ?? 'classic') !== 'classic' && (
               <div>
-                <Label>标题字号</Label>
+                <Label>{copy.headingSize}</Label>
                 <Select
                   value={String(tempSettings.titleScale ?? 1)}
                   onValueChange={(value) =>
@@ -343,9 +437,9 @@ export function CustomizeDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">标准</SelectItem>
-                    <SelectItem value="1.15">放大 15%</SelectItem>
-                    <SelectItem value="1.3">超大 30%</SelectItem>
+                    <SelectItem value="1">{copy.headingScales['1']}</SelectItem>
+                    <SelectItem value="1.15">{copy.headingScales['1.15']}</SelectItem>
+                    <SelectItem value="1.3">{copy.headingScales['1.3']}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -355,10 +449,10 @@ export function CustomizeDialog({
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={handleCancel}>
-            取消
+            {copy.cancel}
           </Button>
           <Button onClick={handleApply}>
-            应用设置
+            {copy.apply}
           </Button>
         </div>
       </DialogContent>

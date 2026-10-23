@@ -3,6 +3,7 @@
 // 与导出逻辑（page.tsx）共用，保证预览与导出一致
 import type { CSSProperties } from 'react'
 import { Marked } from 'marked'
+import type { Locale } from '@/lib/i18n'
 
 export type SizePreset = 'custom' | 'xhs34' | 'xhs916'
 export type PosterTheme = 'classic' | 'xhsVivid' | 'xhsMint'
@@ -56,6 +57,17 @@ export function getSizePreset(preset?: SizePreset): SizePresetOption {
   return sizePresetOptions.find((o) => o.value === (preset ?? 'custom')) ?? sizePresetOptions[0]
 }
 
+// 英文版画布尺寸预设（中文导出保持原样，EN 页面按 locale 取这一份）
+export const sizePresetOptionsEn: SizePresetOption[] = [
+  { value: 'custom', label: 'Custom width', hint: '480–800px · auto height' },
+  { value: 'xhs34', label: '3:4 Poster', hint: '1080×1440', width: 1080, height: 1440 },
+  { value: 'xhs916', label: '9:16 Story', hint: '1080×1920', width: 1080, height: 1920 }
+]
+
+export function getSizePresetOptions(locale: Locale = 'zh'): SizePresetOption[] {
+  return locale === 'en' ? sizePresetOptionsEn : sizePresetOptions
+}
+
 export interface PosterThemeOption {
   value: PosterTheme
   label: string
@@ -85,6 +97,32 @@ export const posterThemeOptions: PosterThemeOption[] = [
     defaultBackground: 'gradient4'
   }
 ]
+
+// 英文版排版主题文案（defaultBackground 与中文版一致，只本地化 label/desc）
+export const posterThemeOptionsEn: PosterThemeOption[] = [
+  {
+    value: 'classic',
+    label: 'Classic card',
+    desc: 'Frosted white card — the original look',
+    defaultBackground: 'gradient1'
+  },
+  {
+    value: 'xhsVivid',
+    label: 'Bold & vivid',
+    desc: 'Large bold headings with highlighter accents',
+    defaultBackground: 'gradient5'
+  },
+  {
+    value: 'xhsMint',
+    label: 'Fresh & minty',
+    desc: 'Soft green rounded card, great for checklists',
+    defaultBackground: 'gradient4'
+  }
+]
+
+export function getPosterThemeOptions(locale: Locale = 'zh'): PosterThemeOption[] {
+  return locale === 'en' ? posterThemeOptionsEn : posterThemeOptions
+}
 
 export function getThemeClass(theme?: PosterTheme): string {
   if (theme === 'xhsVivid') return 'markdown-rendered theme-xhs-vivid'

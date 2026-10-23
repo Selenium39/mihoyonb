@@ -55,6 +55,13 @@ const FOOTER_COPY = {
     links: [
       { href: '/en', label: 'Home' },
       { href: '/en/pindou', label: 'Perler Bead Pattern Generator' },
+      { href: '/en/image-combine', label: 'Photo Collage' },
+      { href: '/en/image-split', label: 'Image Splitter' },
+      { href: '/en/image-watermark', label: 'Image Watermark' },
+      { href: '/en/markdown-to-image', label: 'Markdown to Image' },
+      { href: '/en/qr-code', label: 'QR Code Generator' },
+      { href: '/en/subtitle-tools', label: 'Subtitle Converter' },
+      { href: '/en/video-frame', label: 'Video Frame Extractor' },
     ] as FooterLink[],
     legalLinks: [
       { href: '/en/terms', label: 'Terms of Use' },

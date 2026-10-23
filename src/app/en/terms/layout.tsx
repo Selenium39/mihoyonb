@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   publisher: 'mihoyonb',
+  keywords:
+    'mihoyonb terms of service, free browser tools terms, acceptable use, content ownership, disclaimer, limitation of liability',
   alternates: {
     canonical: EN_URL,
     languages: {

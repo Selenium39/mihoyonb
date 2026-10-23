@@ -1,27 +1,32 @@
 import type { Metadata } from 'next'
 import { siteConfig, getPageTitle, getPageUrl } from '@/config/site'
+import { hreflang } from '@/lib/i18n'
+
+const ZH_URL = getPageUrl('/qr-code')
+const EN_URL = getPageUrl('/en/qr-code')
 
 export const metadata: Metadata = {
   title: getPageTitle(siteConfig.pages.qrCode.title),
   description: siteConfig.pages.qrCode.description,
   alternates: {
-    canonical: getPageUrl('/qr-code'),
+    canonical: ZH_URL,
+    languages: {
+      [hreflang('zh')]: ZH_URL,
+      [hreflang('en')]: EN_URL,
+      'x-default': ZH_URL,
+    },
   },
   keywords: siteConfig.pages.qrCode.keywords,
   openGraph: {
     title: getPageTitle(siteConfig.pages.qrCode.title),
     description: siteConfig.pages.qrCode.description,
-    url: getPageUrl('/qr-code'),
+    url: ZH_URL,
     siteName: siteConfig.name,
     locale: 'zh_CN',
     type: 'website',
   },
 }
 
-export default function QrCodeLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function QrCodeLayout({ children }: { children: React.ReactNode }) {
   return children
 }

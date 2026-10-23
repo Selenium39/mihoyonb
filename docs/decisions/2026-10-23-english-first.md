@@ -37,3 +37,10 @@
 - 当前**暂不填写 Amazon Associates tag**，`src/config/affiliate.ts` 保持空字符串；
   `/en/pindou` 的 “Where to buy beads” 区块在 tag 为空时整体不渲染（避免虚假佣金披露），后续启用时只需填 tag 并重建。
 - 英文站先跑流量与 SEO，变现仍以 AdSense 为主。
+
+## 实施进度（2026-10-23）
+
+- 已完成英文版工具页：`/en/pindou`、`/en/image-combine`、`/en/image-split`、`/en/image-watermark`、`/en/markdown-to-image`、`/en/qr-code`、`/en/subtitle-tools`、`/en/video-frame`；法律页 `/en/privacy`、`/en/terms` 同步为英文。
+- 共享组件 `MarkdownEditor`、`CustomizeDialog`、`WechatCopyDialog`、`ImagePreview`、`CanvasToolbar` 支持可选 `locale`（默认中文），英文页传 `en`。
+- 按上文决策，`social-resize`（中文平台规格）与 `sensitive-words`（中文广告法词库）保留中文版，不做英文翻译。
+- EEA/UK/CH：自建同意横幅 + Google Consent Mode v2；拒绝时不加载 AdSense，页脚「Cookie settings」可随时撤回。当前不是 Google 认证 CMP，后续可评估 Funding Choices。

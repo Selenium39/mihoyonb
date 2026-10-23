@@ -13,6 +13,13 @@ export const LOCALES: readonly Locale[] = ['zh', 'en']
 /** 已翻译的页面配对（中文路径 <-> 英文路径），语言切换只在这些页面间互跳 */
 export const TRANSLATED_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['/pindou', '/en/pindou'],
+  ['/image-split', '/en/image-split'],
+  ['/image-combine', '/en/image-combine'],
+  ['/image-watermark', '/en/image-watermark'],
+  ['/markdown-to-image', '/en/markdown-to-image'],
+  ['/qr-code', '/en/qr-code'],
+  ['/video-frame', '/en/video-frame'],
+  ['/subtitle-tools', '/en/subtitle-tools'],
   ['/privacy', '/en/privacy'],
   ['/terms', '/en/terms'],
 ]

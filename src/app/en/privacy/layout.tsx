@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   publisher: 'mihoyonb',
+  keywords:
+    'mihoyonb privacy policy, browser tools privacy, no upload image tools, cookie-less analytics, Google AdSense privacy, GDPR rights',
   alternates: {
     canonical: EN_URL,
     languages: {

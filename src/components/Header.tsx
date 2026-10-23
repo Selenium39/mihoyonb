@@ -18,6 +18,7 @@ const HEADER_COPY = {
     brand: siteConfig.name,
     tagline: siteConfig.slogan,
     home: '首页',
+    allTools: '全部工具',
     githubAria: 'GitHub 源码仓库',
     githubLabel: 'GitHub 源码',
     toggleMenu: '切换菜单',
@@ -28,6 +29,7 @@ const HEADER_COPY = {
     brand: 'mihoyonb',
     tagline: 'Browser-based creative tools',
     home: 'Home',
+    allTools: 'All tools',
     githubAria: 'GitHub source repository',
     githubLabel: 'GitHub source',
     toggleMenu: 'Toggle menu',
@@ -51,6 +53,7 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
   const enLinks: { href: string; label: string }[] = [
     { href: '/en', label: copy.home },
     { href: '/en/pindou', label: 'Bead Patterns' },
+    { href: '/en#tools', label: copy.allTools },
   ]
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)

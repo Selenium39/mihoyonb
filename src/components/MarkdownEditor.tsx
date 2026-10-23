@@ -13,14 +13,69 @@ import {
   Code,
   Quote
 } from 'lucide-react'
+import type { Locale } from '@/lib/i18n'
+
+/**
+ * 编辑器界面文案：默认中文，英文页传 locale="en"。
+ * 中文保持原有字面量不变。
+ */
+const EDITOR_COPY = {
+  zh: {
+    placeholder: '在这里输入你的 Markdown 内容...',
+    boldTitle: '粗体 (Ctrl+B)',
+    italicTitle: '斜体 (Ctrl+I)',
+    headingTitle: '标题',
+    listTitle: '列表',
+    quoteTitle: '引用',
+    codeTitle: '代码',
+    linkTitle: '链接',
+    imageTitle: '插入图片',
+    clearTitle: '清空',
+    boldText: '粗体文本',
+    italicText: '斜体文本',
+    headingText: '标题',
+    listText: '列表项',
+    linkText: '链接文本',
+    quoteText: '引用文本',
+    imageAlt: '图片',
+    codePlaceholder: 'code',
+  },
+  en: {
+    placeholder: 'Type or paste Markdown here…',
+    boldTitle: 'Bold (Ctrl+B)',
+    italicTitle: 'Italic (Ctrl+I)',
+    headingTitle: 'Heading',
+    listTitle: 'Bulleted list',
+    quoteTitle: 'Quote',
+    codeTitle: 'Code',
+    linkTitle: 'Link',
+    imageTitle: 'Insert image',
+    clearTitle: 'Clear',
+    boldText: 'bold text',
+    italicText: 'italic text',
+    headingText: 'Heading',
+    listText: 'list item',
+    linkText: 'link text',
+    quoteText: 'quote text',
+    imageAlt: 'image',
+    codePlaceholder: 'code',
+  },
+} as const
 
 interface MarkdownEditorProps {
   value: string
   onChange: (value: string) => void
   isFullscreen?: boolean
+  locale?: Locale
 }
 
-export function MarkdownEditor({ value, onChange, isFullscreen = false }: MarkdownEditorProps) {
+export function MarkdownEditor({
+  value,
+  onChange,
+  isFullscreen = false,
+  locale = 'zh',
+}: MarkdownEditorProps) {
+  const copy = EDITOR_COPY[locale]
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -57,29 +112,29 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
 
     switch(action) {
       case 'bold':
-        insertText(`**${selectedText || '粗体文本'}**`, selectedText ? undefined : 2)
+        insertText(`**${selectedText || copy.boldText}**`, selectedText ? undefined : 2)
         break
       case 'italic':
-        insertText(`*${selectedText || '斜体文本'}*`, selectedText ? undefined : 1)
+        insertText(`*${selectedText || copy.italicText}*`, selectedText ? undefined : 1)
         break
       case 'heading':
-        insertText(`## ${selectedText || '标题'}`, selectedText ? undefined : 3)
+        insertText(`## ${selectedText || copy.headingText}`, selectedText ? undefined : 3)
         break
       case 'list':
-        insertText(`\n- ${selectedText || '列表项'}`, selectedText ? undefined : 3)
+        insertText(`\n- ${selectedText || copy.listText}`, selectedText ? undefined : 3)
         break
       case 'link':
-        insertText(`[${selectedText || '链接文本'}](https://example.com)`, selectedText ? undefined : 1)
+        insertText(`[${selectedText || copy.linkText}](https://example.com)`, selectedText ? undefined : 1)
         break
       case 'code':
         if (selectedText.includes('\n')) {
-          insertText(`\`\`\`\n${selectedText || 'code'}\n\`\`\``)
+          insertText(`\`\`\`\n${selectedText || copy.codePlaceholder}\n\`\`\``)
         } else {
-          insertText(`\`${selectedText || 'code'}\``, selectedText ? undefined : 1)
+          insertText(`\`${selectedText || copy.codePlaceholder}\``, selectedText ? undefined : 1)
         }
         break
       case 'quote':
-        insertText(`> ${selectedText || '引用文本'}`, selectedText ? undefined : 2)
+        insertText(`> ${selectedText || copy.quoteText}`, selectedText ? undefined : 2)
         break
       case 'image':
         fileInputRef.current?.click()
@@ -99,7 +154,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
     const reader = new FileReader()
     reader.onload = (event) => {
       const base64 = event.target?.result as string
-      insertText(`![图片](${base64})`)
+      insertText(`![${copy.imageAlt}](${base64})`)
     }
     reader.readAsDataURL(file)
   }
@@ -117,7 +172,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           const reader = new FileReader()
           reader.onload = (event) => {
             const base64 = event.target?.result as string
-            insertText(`![图片](${base64})`)
+            insertText(`![${copy.imageAlt}](${base64})`)
           }
           reader.readAsDataURL(blob)
         }
@@ -135,7 +190,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('bold')}
           className="h-8 w-8"
-          title="粗体 (Ctrl+B)"
+          title={copy.boldTitle}
         >
           <Bold className="h-4 w-4" />
         </Button>
@@ -144,7 +199,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('italic')}
           className="h-8 w-8"
-          title="斜体 (Ctrl+I)"
+          title={copy.italicTitle}
         >
           <Italic className="h-4 w-4" />
         </Button>
@@ -153,7 +208,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('heading')}
           className="h-8 w-8"
-          title="标题"
+          title={copy.headingTitle}
         >
           <Heading className="h-4 w-4" />
         </Button>
@@ -162,7 +217,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('list')}
           className="h-8 w-8"
-          title="列表"
+          title={copy.listTitle}
         >
           <List className="h-4 w-4" />
         </Button>
@@ -171,7 +226,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('quote')}
           className="h-8 w-8"
-          title="引用"
+          title={copy.quoteTitle}
         >
           <Quote className="h-4 w-4" />
         </Button>
@@ -180,7 +235,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('code')}
           className="h-8 w-8"
-          title="代码"
+          title={copy.codeTitle}
         >
           <Code className="h-4 w-4" />
         </Button>
@@ -189,7 +244,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('link')}
           className="h-8 w-8"
-          title="链接"
+          title={copy.linkTitle}
         >
           <Link className="h-4 w-4" />
         </Button>
@@ -198,7 +253,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('image')}
           className="h-8 w-8"
-          title="插入图片"
+          title={copy.imageTitle}
         >
           <Image className="h-4 w-4" />
         </Button>
@@ -208,7 +263,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
           variant="ghost"
           onClick={() => handleToolbarAction('clear')}
           className="h-8 w-8 text-destructive hover:text-destructive"
-          title="清空"
+          title={copy.clearTitle}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -223,7 +278,7 @@ export function MarkdownEditor({ value, onChange, isFullscreen = false }: Markdo
         className={`w-full p-4 bg-background border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring font-mono text-sm ${
           isFullscreen ? 'flex-1' : 'min-h-[400px] md:min-h-[700px]'
         }`}
-        placeholder="在这里输入你的 Markdown 内容..."
+        placeholder={copy.placeholder}
         onKeyDown={(e) => {
           // 快捷键支持
           if (e.ctrlKey || e.metaKey) {

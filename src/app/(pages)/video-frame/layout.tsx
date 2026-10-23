@@ -1,11 +1,20 @@
 import type { Metadata } from 'next'
 import { siteConfig, getPageTitle, getPageUrl } from '@/config/site'
+import { hreflang } from '@/lib/i18n'
+
+const ZH_URL = getPageUrl('/video-frame')
+const EN_URL = getPageUrl('/en/video-frame')
 
 export const metadata: Metadata = {
   title: getPageTitle(siteConfig.pages.videoFrame.title),
   description: siteConfig.pages.videoFrame.description,
   alternates: {
-    canonical: getPageUrl('/video-frame'),
+    canonical: ZH_URL,
+    languages: {
+      [hreflang('zh')]: ZH_URL,
+      [hreflang('en')]: EN_URL,
+      'x-default': ZH_URL,
+    },
   },
   keywords: siteConfig.pages.videoFrame.keywords,
   openGraph: {

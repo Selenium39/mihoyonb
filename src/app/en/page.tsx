@@ -5,8 +5,8 @@ import {
   ArrowRight,
   BadgeCheck,
   FileText,
+  Film,
   LayoutGrid,
-  Mail,
   Palette,
   QrCode,
   Scissors,
@@ -25,14 +25,14 @@ const ZH_HOME_URL = siteConfig.domain
 
 const SITE_TITLE = 'mihoyonb — Free Browser-Based Tools for Creators'
 const SITE_DESCRIPTION =
-  'Free, privacy-first browser tools. Turn any photo into a printable Perler bead pattern with color chart and shopping list — no uploads, no signup.'
+  'Free, privacy-first browser tools: Perler bead patterns, photo collage, image splitter, watermark, Markdown to image, QR codes, subtitles and video frames. No uploads, no signup.'
 
 export const metadata: Metadata = {
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   publisher: 'mihoyonb',
   keywords:
-    'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, privacy-first tools, no upload tools, no signup tools, client-side image tools, hama bead pattern, artkal beads',
+    'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, photo collage maker, image splitter, image watermark, markdown to image, qr code generator, subtitle converter, video frame extractor, privacy-first tools, no upload tools, no signup tools, client-side image tools',
   alternates: {
     canonical: EN_HOME_URL,
     languages: {
@@ -123,26 +123,36 @@ const FEATURED_TOOL = {
   cta: 'Create a bead pattern',
 }
 
-/** 即将上线的工具（英文站暂未开放，不链接到中文页面） */
-const COMING_SOON: {
+/** 其他已上线工具（英文页） */
+const OTHER_TOOLS: {
   title: string
   description: string
+  href: string
   icon: LucideIcon
   chipClass: string
   iconClass: string
 }[] = [
   {
+    title: 'Photo Collage',
+    description: 'Combine photos into one image with grid layouts — free, no upload.',
+    href: '/en/image-combine',
+    icon: LayoutGrid,
+    chipClass: 'bg-pink-100',
+    iconClass: 'text-pink-600',
+  },
+  {
     title: 'Image Splitter',
     description:
-      'Cut a long screenshot into swipeable tiles or an Instagram-style 3×3 grid, ready to post.',
+      'Split long images into equal slices or a 3×3 Instagram grid — free, no upload.',
+    href: '/en/image-split',
     icon: Scissors,
     chipClass: 'bg-orange-100',
     iconClass: 'text-orange-600',
   },
   {
     title: 'Image Watermark',
-    description:
-      'Batch-add text or logo watermarks with position, opacity, rotation and tiling controls.',
+    description: 'Batch text or logo watermarks on images, downloaded as one ZIP.',
+    href: '/en/image-watermark',
     icon: Stamp,
     chipClass: 'bg-teal-100',
     iconClass: 'text-teal-600',
@@ -150,31 +160,33 @@ const COMING_SOON: {
   {
     title: 'Markdown to Image',
     description:
-      'Turn Markdown notes into clean, shareable images without leaving the browser.',
+      'Turn Markdown into a shareable PNG with live preview and custom themes.',
+    href: '/en/markdown-to-image',
     icon: FileText,
     chipClass: 'bg-indigo-100',
     iconClass: 'text-indigo-600',
   },
   {
-    title: 'Photo Collage',
-    description:
-      'Combine several photos into one grid layout with custom spacing, corners and background.',
-    icon: LayoutGrid,
-    chipClass: 'bg-pink-100',
-    iconClass: 'text-pink-600',
-  },
-  {
     title: 'QR Code Generator',
-    description:
-      'Create custom-colored QR codes and export them at print-ready resolution.',
+    description: 'Free QR code generator with logo, colors, and transparent PNG export.',
+    href: '/en/qr-code',
     icon: QrCode,
     chipClass: 'bg-emerald-100',
     iconClass: 'text-emerald-600',
   },
   {
-    title: 'Subtitle Tools',
+    title: 'Video Frame Extractor',
     description:
-      'Convert, shift and merge SRT/VTT subtitle files locally, with nothing uploaded.',
+      'Capture still frames from any video in your browser, one by one or in bulk.',
+    href: '/en/video-frame',
+    icon: Film,
+    chipClass: 'bg-purple-100',
+    iconClass: 'text-purple-600',
+  },
+  {
+    title: 'Subtitle Converter',
+    description: 'Convert SRT to VTT, shift timing, merge and clean up subtitles locally.',
+    href: '/en/subtitle-tools',
     icon: Subtitles,
     chipClass: 'bg-blue-100',
     iconClass: 'text-blue-600',
@@ -202,6 +214,11 @@ const FAQS: { question: string; answer: string }[] = [
     question: 'What can I do with the Perler bead pattern generator?',
     answer:
       'Upload a photo and it becomes a printable bead pattern: every cell is matched to a 96-color numeric reference palette, with per-color bead counts, a high-resolution PNG blueprint and a CSV shopping list. It works for Perler, Hama and Artkal style fuse beads.',
+  },
+  {
+    question: 'Which other tools are available?',
+    answer:
+      'A photo collage maker, image splitter, batch image watermark, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
   },
 ]
 
@@ -247,7 +264,8 @@ export default function EnglishHomePage() {
           </h1>
           <p className="mt-4 text-lg md:text-xl text-muted-foreground">
             mihoyonb is a growing collection of creative tools that run entirely in your browser.
-            Start with the Perler bead pattern generator, with more tools on the way.
+            Start with the Perler bead pattern generator, then split images, convert Markdown,
+            generate QR codes and clean up subtitles — all on your device.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
             {HERO_BADGES.map((badge) => (
@@ -267,7 +285,7 @@ export default function EnglishHomePage() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <a href="#coming-soon">See what is coming next</a>
+              <a href="#tools">Browse all tools</a>
             </Button>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
@@ -294,7 +312,7 @@ export default function EnglishHomePage() {
       </section>
 
       {/* 已上线工具 */}
-      <section className="container mx-auto px-4 py-8 md:py-10">
+      <section id="tools" className="container mx-auto px-4 py-8 md:py-10 scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <h2 className="text-lg font-semibold text-foreground flex-shrink-0">
@@ -337,29 +355,18 @@ export default function EnglishHomePage() {
               </Link>
             </CardContent>
           </Card>
-        </div>
-      </section>
 
-      {/* 即将上线 */}
-      <section id="coming-soon" className="container mx-auto px-4 py-8 md:py-10 scroll-mt-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <h2 className="text-lg font-semibold text-foreground flex-shrink-0">
-              Coming soon
-            </h2>
-            <div className="h-px flex-1 bg-border" aria-hidden="true" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {COMING_SOON.map((tool) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-6">
+            {OTHER_TOOLS.map((tool) => {
               const Icon = tool.icon
               return (
-                <Card key={tool.title} className="h-full bg-muted/20">
-                  <CardHeader>
+                <Card key={tool.href} className="h-full hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-3 text-base">
                       <div
-                        className={`w-10 h-10 ${tool.chipClass} rounded-lg flex items-center justify-center flex-shrink-0`}
+                        className={`w-9 h-9 ${tool.chipClass} rounded-lg flex items-center justify-center flex-shrink-0`}
                       >
-                        <Icon className={`w-5 h-5 ${tool.iconClass}`} />
+                        <Icon className={`w-4 h-4 ${tool.iconClass}`} />
                       </div>
                       <span>{tool.title}</span>
                     </CardTitle>
@@ -368,27 +375,18 @@ export default function EnglishHomePage() {
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {tool.description}
                     </p>
-                    <span className="inline-block mt-3 bg-background border px-2 py-0.5 rounded text-xs text-muted-foreground">
-                      Coming soon
-                    </span>
+                    <Link
+                      href={tool.href}
+                      className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-primary hover:underline"
+                    >
+                      Open tool
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </CardContent>
                 </Card>
               )
             })}
           </div>
-          <p className="mt-5 text-sm text-muted-foreground flex items-center gap-2">
-            <Mail className="w-4 h-4 flex-shrink-0" />
-            <span>
-              Want a specific tool sooner?{' '}
-              <a
-                href={`mailto:${siteConfig.author.email}`}
-                className="text-primary hover:underline"
-              >
-                Send us a note
-              </a>
-              .
-            </span>
-          </p>
         </div>
       </section>
 
@@ -430,7 +428,7 @@ export default function EnglishHomePage() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-              <a href="#coming-soon">See what is coming next</a>
+              <a href="#tools">Browse all tools</a>
             </Button>
           </div>
         </div>
