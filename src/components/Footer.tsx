@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/config/site'
 import { getLocaleFromPathname, type Locale } from '@/lib/i18n'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { OPEN_CONSENT_EVENT } from '@/lib/consent'
 
 type FooterLink = { href: string; label: string }
@@ -100,9 +99,6 @@ export function Footer({ locale: initialLocale }: { locale: Locale }) {
               <p className="text-xs text-muted-foreground/80">
                 © {currentYear} {copy.brand}. All rights reserved.
               </p>
-              <div className="flex justify-center md:justify-start">
-                <LanguageSwitcher variant="footer" locale={locale} />
-              </div>
             </div>
           </div>
 

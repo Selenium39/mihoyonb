@@ -34,13 +34,11 @@ const TRIGGER_CLASS: Record<LanguageSwitcherVariant, string> = {
     'flex h-8 w-auto items-center gap-1.5 rounded-md border-0 bg-transparent px-2 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground focus:ring-1 focus:ring-ring focus:ring-offset-0',
   mobile:
     'flex h-auto w-auto items-center gap-2 rounded-md border-0 bg-transparent px-3 py-0 text-xs font-medium text-muted-foreground hover:text-foreground focus:ring-1 focus:ring-ring focus:ring-offset-0',
-  footer:
-    'flex h-auto w-auto items-center gap-1.5 border-0 bg-transparent p-0 text-xs text-muted-foreground hover:text-foreground focus:ring-1 focus:ring-ring focus:ring-offset-0',
   inline:
     'flex h-auto w-auto items-center gap-1.5 rounded-full border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground focus:ring-1 focus:ring-ring focus:ring-offset-0',
 }
 
-export type LanguageSwitcherVariant = 'header' | 'mobile' | 'footer' | 'inline'
+export type LanguageSwitcherVariant = 'header' | 'mobile' | 'inline'
 
 export function LanguageSwitcher({
   variant = 'inline',
