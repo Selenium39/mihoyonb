@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Plus, X, Download, Type, ArrowRight, Square, Circle, Copy } from 'lucide-react'
 import { CanvasElement } from '@/components/CanvasToolbar'
 import { trackToolExport } from '@/lib/analytics'
@@ -1350,9 +1349,6 @@ export default function ImageCombineTool({ locale }: ImageCombineToolProps) {
   return (
     <div className="bg-background min-h-screen">
       <div className="container mx-auto py-8 px-4">
-        <div className="mb-4 flex justify-end">
-          <LanguageSwitcher variant="inline" />
-        </div>
 
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-foreground mb-4">{copy.hero.title}</h1>

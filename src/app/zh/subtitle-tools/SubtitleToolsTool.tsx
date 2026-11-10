@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useRef, useState } from 'react'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -295,10 +294,6 @@ export default function SubtitleToolsTool({ locale }: { locale: Locale }) {
   return (
     <div className="bg-background min-h-screen">
       <div className="container mx-auto py-8 px-4">
-        {/* 语言切换 */}
-        <div className="mb-4 flex justify-end">
-          <LanguageSwitcher variant="inline" />
-        </div>
 
         {/* 页面标题 */}
         <div className="mb-8 text-center">

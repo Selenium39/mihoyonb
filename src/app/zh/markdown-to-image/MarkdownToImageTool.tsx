@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MarkdownEditor } from '@/components/MarkdownEditor'
@@ -317,10 +316,6 @@ export default function MarkdownToImageTool({ locale }: MarkdownToImageToolProps
       {/* 常规模式 */}
       <div className="bg-background">
         <div className="container mx-auto py-4 md:py-8 px-4">
-          {/* 语言切换 */}
-          <div className="mb-3 flex justify-end">
-            <LanguageSwitcher variant="inline" />
-          </div>
 
           {/* 页面标题和工具栏 */}
           <div className="mb-4 md:mb-6">

@@ -1,19 +1,15 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { LegalDoc } from '@/content/legal'
 import type { Locale } from '@/lib/i18n'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 /**
  * 法律页面通用渲染：隐私政策 / 服务条款共用，中英同构。
- * 语言切换统一走 LanguageSwitcher，按当前路径自动配对。
+ * 语言切换统一走 Header 的全局下拉（LanguageSwitcher），页内不再重复放置。
  */
 export function LegalPage({ doc, locale }: { doc: LegalDoc; locale: Locale }) {
   return (
     <div className="bg-background">
       <div className="container mx-auto py-8 px-4">
-        <div className="max-w-4xl mx-auto mb-4 flex justify-end">
-          <LanguageSwitcher variant="inline" locale={locale} />
-        </div>
 
         <Card className="w-full max-w-4xl mx-auto">
           <CardHeader>
