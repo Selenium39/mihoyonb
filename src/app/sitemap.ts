@@ -25,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/image-watermark', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/social-resize', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/sensitive-words', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/ai-watermark-checker', priority: 0.9, changeFrequency: 'weekly' as const },
     { path: '/markdown-to-image', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/qr-code', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/video-frame', priority: 0.7, changeFrequency: 'weekly' as const },

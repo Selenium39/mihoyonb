@@ -18,6 +18,7 @@ mihoyonb (原牛) is an open-source collection of client-side tools for images, 
 | Image Watermark | `/image-watermark` | `/zh/image-watermark` | Adds text or logo watermarks in bulk, with position, opacity, rotation and tiling controls. |
 | Social Media Image Resizer | `/social-resize` | `/zh/social-resize` | Resizes one image for multiple platforms with cover/contain modes and custom dimensions. Chinese and English versions ship market-specific presets. |
 | Sensitive Word Checker | `/sensitive-words` | `/zh/sensitive-words` | Scans copy for risky advertising claims, highlights matches and can mask them in one click. Chinese and English versions use separate, market-appropriate word lists. |
+| AI Watermark Checker | `/ai-watermark-checker` | `/zh/ai-watermark-checker` | Finds hidden characters in pasted text (zero-width spaces, narrow spaces, smart quotes) and copies back plain text. Runs entirely in the browser. |
 | Markdown to Image | `/markdown-to-image` | `/zh/markdown-to-image` | Renders Markdown into a shareable PNG with live preview and custom themes. |
 | QR Code Generator | `/qr-code` | `/zh/qr-code` | Generates customizable QR codes with colors, a center logo and transparent-background export. |
 | Video Frame Extractor | `/video-frame` | `/zh/video-frame` | Captures still frames from a video frame by frame, with keyboard shortcuts and single or batch export. |
@@ -85,6 +86,7 @@ src/
 │   ├── image-watermark/
 │   ├── social-resize/
 │   ├── sensitive-words/
+│   ├── ai-watermark-checker/
 │   ├── markdown-to-image/
 │   ├── qr-code/
 │   ├── video-frame/
@@ -117,6 +119,7 @@ src/
 │   ├── image-watermark.ts
 │   ├── markdown-poster.ts
 │   ├── sensitive-words.ts
+│   ├── ai-watermark.ts
 │   ├── sensitive-words-en.ts
 │   ├── subtitle.ts
 │   └── ...

@@ -22,6 +22,7 @@ const FOOTER_COPY = {
     cookieSettings: 'Cookie 设置',
     links: [
       { href: '/zh', label: '首页' },
+      { href: '/zh/ai-watermark-checker', label: 'AI 水印检测' },
       { href: '/zh/image-combine', label: '图片拼接' },
       { href: '/zh/image-split', label: '长图切割' },
       { href: '/zh/image-watermark', label: '图片加水印' },
@@ -50,6 +51,7 @@ const FOOTER_COPY = {
     cookieSettings: 'Cookie settings',
     links: [
       { href: '/', label: 'Home' },
+      { href: '/ai-watermark-checker', label: 'AI Watermark Checker' },
       { href: '/pindou', label: 'Perler Bead Pattern Generator' },
       { href: '/image-combine', label: 'Photo Collage' },
       { href: '/image-split', label: 'Image Splitter' },

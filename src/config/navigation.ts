@@ -5,6 +5,7 @@ import {
   LayoutGrid,
   Palette,
   QrCode,
+  ScanSearch,
   Scissors,
   ShieldAlert,
   Stamp,
@@ -53,6 +54,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { name: 'Markdown转图片', href: '/zh/markdown-to-image', description: '排版一键出图', icon: FileText },
       { name: '字幕工具', href: '/zh/subtitle-tools', description: 'SRT/VTT 处理', icon: Subtitles },
       { name: '敏感词检测', href: '/zh/sensitive-words', description: '违禁词高亮', icon: ShieldAlert },
+      { name: 'AI 水印检测', href: '/zh/ai-watermark-checker', description: '隐藏字符与窄空格', icon: ScanSearch },
     ],
   },
 ]

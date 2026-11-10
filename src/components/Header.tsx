@@ -48,6 +48,7 @@ export function Header({ locale: initialLocale }: { locale: Locale }) {
   // 英文站导航（只列已上线页面）
   const enLinks: { href: string; label: string }[] = [
     { href: '/', label: copy.home },
+    { href: '/ai-watermark-checker', label: 'AI Watermark Checker' },
     { href: '/pindou', label: 'Bead Patterns' },
     { href: '/#tools', label: copy.allTools },
   ]
