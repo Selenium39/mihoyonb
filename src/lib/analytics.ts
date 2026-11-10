@@ -24,6 +24,7 @@ export type ToolId =
   | 'image_watermark'
   | 'social_resize'
   | 'qr_code'
+  | 'stamp_maker'
   | 'pindou'
   | 'subtitle_tools'
   | 'sensitive_words'

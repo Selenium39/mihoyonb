@@ -18,6 +18,7 @@ export const TRANSLATED_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['/zh/image-watermark', '/image-watermark'],
   ['/zh/markdown-to-image', '/markdown-to-image'],
   ['/zh/qr-code', '/qr-code'],
+  ['/zh/stamp-maker', '/stamp-maker'],
   ['/zh/video-frame', '/video-frame'],
   ['/zh/subtitle-tools', '/subtitle-tools'],
   ['/zh/social-resize', '/social-resize'],

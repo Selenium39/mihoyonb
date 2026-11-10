@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "html2canvas-pro": "^2.5.2",
+    "jspdf": "^4.2.1",
     "jszip": "^3.10.2",
     "lucide-react": "^0.294.0",
     "marked": "^16.1.2",

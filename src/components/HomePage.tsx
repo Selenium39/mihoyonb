@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Stamp,
+  StampIcon,
   Subtitles,
   WifiOff,
 } from 'lucide-react'
@@ -194,6 +195,14 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         iconClass: 'text-emerald-600',
       },
       {
+        title: '印章生成',
+        description: '圆章、椭圆章、矩形章，弧形文字与做旧效果，导出 PNG/SVG/PDF。',
+        href: '/zh/stamp-maker',
+        icon: StampIcon,
+        chipClass: 'bg-red-100',
+        iconClass: 'text-red-600',
+      },
+      {
         title: '视频截帧',
         description: '在浏览器中从视频逐帧截取画面，支持单张或批量。',
         href: '/zh/video-frame',
@@ -367,6 +376,15 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         icon: QrCode,
         chipClass: 'bg-emerald-100',
         iconClass: 'text-emerald-600',
+      },
+      {
+        title: 'Stamp Maker',
+        description:
+          'Design round, oval and rectangular stamps with curved text and an aging effect. Export PNG, SVG, PDF.',
+        href: '/stamp-maker',
+        icon: StampIcon,
+        chipClass: 'bg-red-100',
+        iconClass: 'text-red-600',
       },
       {
         title: 'Video Frame Extractor',
