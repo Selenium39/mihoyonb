@@ -11,7 +11,6 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -232,12 +231,9 @@ export default function PhotoStampTool({ locale }: PhotoStampToolProps) {
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-10">
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{copy.hero.title}</h1>
-          <p className="mt-2 text-muted-foreground max-w-2xl">{copy.hero.intro}</p>
-        </div>
-        <LanguageSwitcher variant="inline" />
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">{copy.hero.title}</h1>
+        <p className="mt-2 text-muted-foreground max-w-2xl">{copy.hero.intro}</p>
       </div>
 
       {error && (

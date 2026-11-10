@@ -11,7 +11,6 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -270,12 +269,9 @@ export default function StampMakerTool({ locale }: StampMakerToolProps) {
   return (
     <div className="container mx-auto px-4 py-8 md:py-10">
       {/* Hero */}
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{copy.hero.title}</h1>
-          <p className="mt-2 text-muted-foreground max-w-2xl">{copy.hero.intro}</p>
-        </div>
-        <LanguageSwitcher variant="inline" />
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">{copy.hero.title}</h1>
+        <p className="mt-2 text-muted-foreground max-w-2xl">{copy.hero.intro}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
