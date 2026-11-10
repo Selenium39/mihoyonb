@@ -29,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/markdown-to-image', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/qr-code', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/stamp-maker', priority: 0.9, changeFrequency: 'weekly' as const },
+    { path: '/photo-stamp', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/video-frame', priority: 0.7, changeFrequency: 'weekly' as const },
     { path: '/subtitle-tools', priority: 0.7, changeFrequency: 'weekly' as const },
     { path: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },

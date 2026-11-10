@@ -96,6 +96,11 @@ export const siteConfig = {
       description: '免费在线制作印章：圆形、椭圆、矩形公章与签名章，弧形文字、多种边框、做旧磨损效果，导出 PNG/JPG/SVG/PDF，纯浏览器本地生成，不上传',
       keywords: '印章生成器,在线印章,电子章制作,公章生成,印章设计,图章制作,电子签名章,stamp maker,印章模板',
     },
+    photoStamp: {
+      title: '照片盖章',
+      description: '把印章盖到照片上：一键带入印章生成器的设计或上传透明底印章图，点击放置拖动调整，印泥混合模式仿真盖章，原图分辨率导出，照片不上传',
+      keywords: '照片盖章,图片盖章,照片加印章,图片加公章,电子章盖照片,photo stamp,照片水印章',
+    },
     subtitleTools: {
       title: '字幕工具',
       description: '在线处理SRT/VTT字幕文件，支持格式互转、时间轴调整、字幕合并与分割，纯浏览器本地处理，文件不上传，完全免费',

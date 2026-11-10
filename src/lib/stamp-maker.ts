@@ -3,17 +3,21 @@
  *
  * 设计要点：
  * - 以 400×400 viewBox 为画布基准，圆形 R=190；导出时按倍率光栅化即可得到高清位图。
- * - 弧形文字用 SVG <textPath>：上弧 sweep=1（左→上→右），下弧 sweep=0（左→底→右，文字正立）。
+ * - 弧形文字用 SVG <textPath>：上弧 sweep=1（左→上→右），下弧 sweep=0（左→底→右，文字正立）；
+ *   矩形/三角形退化为水平直线文字。
+ * - 经典装饰边（扇贝/光芒/齿轮/绳珠）只支持圆形，全部程序生成 path/circle，无外部资源。
  * - 老化效果用 SVG 滤镜（feTurbulence + feDisplacementMap 毛边 + 高频噪声 mask 做墨迹斑驳），
  *   全部是 SVG 原生能力，导出光栅化时依然有效。
  * - 渲染是纯函数（state → svg string），预览用 dangerouslySetInnerHTML 注入，
  *   导出走同一条渲染管线，保证所见即所得。
  */
 
-export type StampShape = 'circle' | 'ellipse' | 'rect'
+export type StampShape = 'circle' | 'ellipse' | 'rect' | 'triangle'
 export type BorderStyle = 'single' | 'double' | 'triple' | 'dashed' | 'dotted'
+/** 圆形专属经典装饰边 */
+export type StampEdge = 'none' | 'scalloped' | 'sunburst' | 'gear' | 'rope'
 
-/** 弧形文字（顶部 / 底部，圆与椭圆沿弧排布，矩形退化为直线） */
+/** 弧形文字（顶部 / 底部，圆与椭圆沿弧排布，矩形/三角形为直线） */
 export interface ArcText {
   enabled: boolean
   text: string
@@ -31,14 +35,25 @@ export interface CenterText {
   lineHeight: number
 }
 
+/** 中心图标（上传 SVG/PNG 的 dataURL） */
+export interface StampIcon {
+  enabled: boolean
+  src: string | null
+  /** 相对内框边长的比例 */
+  scale: number
+}
+
 export interface StampState {
   shape: StampShape
   /** 墨水颜色 */
   color: string
   border: { style: BorderStyle; width: number }
+  /** 圆形装饰边（其他形状渲染时忽略） */
+  edge: StampEdge
   top: ArcText
   bottom: ArcText
   center: CenterText
+  icon: StampIcon
   /** 0-1，整体不透明度 */
   opacity: number
   /** 0-100，老化磨损强度 */
@@ -86,7 +101,7 @@ export function getFontStack(fontId: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// 画布常量
+// 画布常量与几何
 // ---------------------------------------------------------------------------
 
 const VB = 400
@@ -94,6 +109,11 @@ const CX = VB / 2
 const CY = VB / 2
 /** 圆形外框半径 */
 export const CIRCLE_R = 190
+/** 有装饰边时圆形整体内缩，给装饰环留空间 */
+const CIRCLE_R_WITH_EDGE = 177
+/** 装饰环参数：内半径基准间隙与厚度 */
+const EDGE_GAP = 5
+const EDGE_THICKNESS = 9
 /** 椭圆半径 */
 export const ELLIPSE_RX = 190
 export const ELLIPSE_RY = 132
@@ -101,20 +121,48 @@ export const ELLIPSE_RY = 132
 export const RECT_HW = 190
 export const RECT_HH = 132
 export const RECT_RADIUS = 12
+/** 三角形（等边，质心居中）：高 260 → 顶点 y=200-173，底边 y=287，半宽 150 */
+const TRI_H = 260
+const TRI_HW = 150
+const TRI_APEX_Y = CY - (TRI_H * 2) / 3
+const TRI_BASE_Y = CY + TRI_H / 3
 
 export const VIEWBOX = { width: VB, height: VB }
 
-/** 形状边框的几何参数：外框（含圆/椭圆/矩形），按 inset 缩进得到同心边框 */
+/** 当前 state 下圆形的有效外半径（装饰边占用时内缩） */
+function circleBaseR(state: StampState): number {
+  return state.shape === 'circle' && state.edge !== 'none' ? CIRCLE_R_WITH_EDGE : CIRCLE_R
+}
+
+/** 形状边框的几何参数，按 inset 缩进得到同心边框 */
 function borderInsetGeometry(state: StampState, inset: number) {
   const w = state.border.width
   switch (state.shape) {
     case 'circle':
-      return { kind: 'circle' as const, r: CIRCLE_R - inset, w }
+      return { kind: 'circle' as const, r: circleBaseR(state) - inset, w }
     case 'ellipse':
       return { kind: 'ellipse' as const, rx: ELLIPSE_RX - inset, ry: ELLIPSE_RY - inset, w }
     case 'rect':
       return { kind: 'rect' as const, hw: RECT_HW - inset, hh: RECT_HH - inset, w }
+    case 'triangle':
+      return { kind: 'triangle' as const, inset, w }
   }
+}
+
+/** 三角形顶点（等边、质心在画布中心），inset>0 时向质心收缩 */
+function trianglePoints(inset: number): Array<[number, number]> {
+  const cx = CX
+  const cy = CY
+  const apex: [number, number] = [cx, TRI_APEX_Y]
+  const bl: [number, number] = [cx - TRI_HW, TRI_BASE_Y]
+  const br: [number, number] = [cx + TRI_HW, TRI_BASE_Y]
+  if (inset <= 0) return [apex, bl, br]
+  return [apex, bl, br].map((p) => {
+    const dx = cx - p[0]
+    const dy = cy - p[1]
+    const len = Math.sqrt(dx * dx + dy * dy)
+    return [p[0] + (dx / len) * inset * 1.2, p[1] + (dy / len) * inset * 1.2] as [number, number]
+  })
 }
 
 function borderElement(state: StampState, inset: number): string {
@@ -128,6 +176,12 @@ function borderElement(state: StampState, inset: number): string {
       return `<ellipse cx="${CX}" cy="${CY}" rx="${g.rx}" ry="${g.ry}" ${common}/>`
     case 'rect':
       return `<rect x="${CX - g.hw}" y="${CY - g.hh}" width="${g.hw * 2}" height="${g.hh * 2}" rx="${RECT_RADIUS}" ${common}/>`
+    case 'triangle': {
+      const pts = trianglePoints(g.inset)
+        .map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`)
+        .join(' ')
+      return `<polygon points="${pts}" ${common} stroke-linejoin="round"/>`
+    }
   }
 }
 
@@ -161,6 +215,79 @@ function borderLayers(state: StampState): string[] {
 }
 
 // ---------------------------------------------------------------------------
+// 装饰边（圆形专属，程序生成）
+// ---------------------------------------------------------------------------
+
+function polar(cx: number, cy: number, r: number, theta: number): [number, number] {
+  return [cx + r * Math.cos(theta), cy + r * Math.sin(theta)]
+}
+
+/** 扇贝边：n 段外凸半圆拼成的闭合环 */
+function scallopRing(color: string, rInner: number): string {
+  const n = 26
+  const rOuter = rInner + EDGE_THICKNESS
+  const chord = 2 * rInner * Math.sin(Math.PI / n)
+  const rArc = chord / 2 + 0.6
+  let d = ''
+  for (let i = 0; i < n; i++) {
+    const a1 = (i / n) * Math.PI * 2 - Math.PI / 2
+    const a2 = ((i + 1) / n) * Math.PI * 2 - Math.PI / 2
+    const p1 = polar(CX, CY, rInner, a1)
+    const p2 = polar(CX, CY, rInner, a2)
+    // 起点后每段一个大弧凸出（sweep=1 顺时针，凸向外）
+    d += `${i === 0 ? `M ${p1[0].toFixed(2)} ${p1[1].toFixed(2)}` : ''} A ${rArc.toFixed(2)} ${rArc.toFixed(2)} 0 0 1 ${p2[0].toFixed(2)} ${p2[1].toFixed(2)} `
+    void rOuter
+  }
+  return `<path d="${d}Z" fill="${color}" stroke="none"/>`
+}
+
+/** 齿状环（光芒/齿轮通用）：n 齿多边形，齿顶比例 tip 控制粗细 */
+function teethRing(color: string, rInner: number, n: number, tip: number): string {
+  const rOuter = rInner + EDGE_THICKNESS
+  let d = ''
+  const step = (Math.PI * 2) / n
+  for (let i = 0; i < n; i++) {
+    const a = i * step - Math.PI / 2
+    const p1 = polar(CX, CY, rInner, a)
+    const p2 = polar(CX, CY, rOuter, a + step * tip)
+    const p3 = polar(CX, CY, rInner, a + step * tip * 2)
+    d += `${i === 0 ? `M ${p1[0].toFixed(2)} ${p1[1].toFixed(2)}` : ''} L ${p2[0].toFixed(2)} ${p2[1].toFixed(2)} L ${p3[0].toFixed(2)} ${p3[1].toFixed(2)} `
+  }
+  return `<path d="${d}Z" fill="${color}" stroke="none"/>`
+}
+
+/** 绳珠边：交替大小的圆点环 */
+function ropeRing(color: string, rMid: number): string {
+  const n = 54
+  let out = ''
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2
+    const p = polar(CX, CY, rMid, a)
+    const r = i % 2 === 0 ? 2.2 : 3.4
+    out += `<circle cx="${p[0].toFixed(2)}" cy="${p[1].toFixed(2)}" r="${r}" fill="${color}" stroke="none"/>`
+  }
+  return out
+}
+
+/** 装饰环组；仅圆形渲染，其他形状返回空。
+ *  半径基准：有装饰边时 circleBaseR=177，装饰环 [191, 200] 恰好贴画布不溢出。 */
+function edgeRing(state: StampState): string {
+  if (state.shape !== 'circle' || state.edge === 'none') return ''
+  const rInner = circleBaseR(state) + 14
+  const rMid = rInner + EDGE_THICKNESS / 2
+  switch (state.edge) {
+    case 'scalloped':
+      return scallopRing(state.color, rInner)
+    case 'sunburst':
+      return teethRing(state.color, rInner, 56, 0.34)
+    case 'gear':
+      return teethRing(state.color, rInner, 22, 0.5)
+    case 'rope':
+      return ropeRing(state.color, rMid)
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 文字
 // ---------------------------------------------------------------------------
 
@@ -177,12 +304,12 @@ function escapeXml(s: string): string {
  * 文字基线路径：
  * - circle：上弧 sweep=1 / 下弧 sweep=0（下弧文字正立）
  * - ellipse：椭圆弧同理
- * - rect：直线
+ * - rect / triangle：直线
  */
 function textPathD(state: StampState, zone: 'top' | 'bottom', radiusShrink: number): string {
   switch (state.shape) {
     case 'circle': {
-      const r = CIRCLE_R - radiusShrink
+      const r = circleBaseR(state) - radiusShrink
       const sweep = zone === 'top' ? 1 : 0
       return `M ${CX - r} ${CY} A ${r} ${r} 0 1 ${sweep} ${CX + r} ${CY}`
     }
@@ -198,6 +325,17 @@ function textPathD(state: StampState, zone: 'top' | 'bottom', radiusShrink: numb
       const x1 = CX - RECT_HW + inset
       const x2 = CX + RECT_HW - inset
       return `M ${x1} ${y} L ${x2} ${y}`
+    }
+    case 'triangle': {
+      // 上部文字带放在三角上 1/3 下方（该高度处三角形半宽约 71），底部文字贴底边上方
+      if (zone === 'top') {
+        const y = CY - TRI_H * 0.18
+        const half = 70
+        return `M ${CX - half} ${y} L ${CX + half} ${y}`
+      }
+      const y = TRI_BASE_Y - 26
+      const half = 122
+      return `M ${CX - half} ${y} L ${CX + half} ${y}`
     }
   }
 }
@@ -224,20 +362,48 @@ function arcText(state: StampState, zone: 'top' | 'bottom', uid: string): { defs
   }
 }
 
-function centerText(state: StampState): string {
+/** 中央文字与图标的布局：两者共存时 icon 在上、文字在下 */
+function centerBlock(state: StampState): string {
   const c = state.center
-  if (!c.enabled || !c.lines.trim()) return ''
-  const f = getStampFont(c.fontId)
-  const lines = c.lines.split('\n').filter((l) => l.trim().length > 0)
+  const hasText = c.enabled && c.lines.trim().length > 0
+  const hasIcon = state.icon.enabled && !!state.icon.src
+  if (!hasText && !hasIcon) return ''
+
+  // 内框边长（约）：圆形用有效半径，其他形状用半宽高的较小值
+  const baseR =
+    state.shape === 'circle'
+      ? circleBaseR(state)
+      : Math.min(state.shape === 'ellipse' ? ELLIPSE_RY : state.shape === 'rect' ? RECT_HH : TRI_H * 0.4, 190)
+  const innerBox = (baseR - state.border.width * 2 - 12) * 2
+
+  const parts: string[] = []
+  const lines = hasText ? c.lines.split('\n').filter((l) => l.trim().length > 0) : []
   const lh = c.size * c.lineHeight
-  const firstBaseline = CY - ((lines.length - 1) * lh) / 2 + c.size * 0.35
-  const spans = lines
-    .map((line, i) => `<tspan x="${CX}" y="${firstBaseline + i * lh}">${escapeXml(line)}</tspan>`)
-    .join('')
-  return (
-    `<text font-family="${getFontStack(c.fontId)}" font-size="${c.size}" font-weight="${f.weight}" ` +
-    `fill="${state.color}" text-anchor="middle">${spans}</text>`
-  )
+  const textH = lines.length * lh
+  const iconH = hasIcon ? innerBox * state.icon.scale : 0
+  const totalH = iconH + (hasText ? textH : 0)
+  const topY = CY - totalH / 2
+
+  if (hasIcon) {
+    const src = state.icon.src as string
+    const w = iconH
+    const h = iconH
+    parts.push(
+      `<image href="${escapeXml(src)}" x="${CX - w / 2}" y="${topY}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>`,
+    )
+  }
+  if (hasText) {
+    const f = getStampFont(c.fontId)
+    const firstBaseline = topY + iconH + textH / 2 - ((lines.length - 1) * lh) / 2 + c.size * 0.35
+    const spans = lines
+      .map((line, i) => `<tspan x="${CX}" y="${(firstBaseline + i * lh).toFixed(1)}">${escapeXml(line)}</tspan>`)
+      .join('')
+    parts.push(
+      `<text font-family="${getFontStack(c.fontId)}" font-size="${c.size}" font-weight="${f.weight}" ` +
+        `fill="${state.color}" text-anchor="middle">${spans}</text>`,
+    )
+  }
+  return parts.join('')
 }
 
 // ---------------------------------------------------------------------------
@@ -282,7 +448,13 @@ export function renderStampSVG(state: StampState, opts: RenderOptions = {}): str
   const top = arcText(state, 'top', uid)
   const bottom = arcText(state, 'bottom', uid)
   const defsParts: string[] = [top.defs, bottom.defs]
-  let bodyParts: string[] = [...borderLayers(state), top.body, bottom.body, centerText(state)]
+  let bodyParts: string[] = [
+    edgeRing(state),
+    ...borderLayers(state),
+    top.body,
+    bottom.body,
+    centerBlock(state),
+  ]
 
   if (state.aging > 0) {
     defsParts.push(agingFilter(uid, state.aging))
@@ -315,9 +487,11 @@ function baseState(): StampState {
     shape: 'circle',
     color: '#c8102e',
     border: { style: 'single', width: 4 },
+    edge: 'none',
     top: { enabled: true, text: 'YOUR COMPANY NAME', fontId: 'cinzel', size: 30, letterSpacing: 0.12 },
     bottom: { enabled: true, text: 'INCORPORATED', fontId: 'cinzel', size: 24, letterSpacing: 0.14 },
     center: { enabled: true, lines: '★', fontId: 'cinzel', size: 60, lineHeight: 1.15 },
+    icon: { enabled: false, src: null, scale: 0.5 },
     opacity: 0.92,
     aging: 18,
     sizeMm: { width: 40, height: 40 },
@@ -440,6 +614,70 @@ export const STAMP_TEMPLATES: StampTemplate[] = [
       bottom: { enabled: true, text: 'PAYMENT VERIFIED', fontId: 'courier', size: 18, letterSpacing: 0.1 },
       center: { enabled: true, lines: 'PAID', fontId: 'oswald', size: 68, lineHeight: 1.1 },
       sizeMm: { width: 60, height: 40 },
+    },
+  },
+  {
+    id: 'notary-scalloped',
+    nameEn: 'Notary (Scalloped Edge)',
+    nameZh: '公证章（扇贝边）',
+    state: {
+      ...baseState(),
+      color: '#9d0f1c',
+      border: { style: 'single', width: 3.5 },
+      edge: 'scalloped',
+      top: { enabled: true, text: 'NOTARY PUBLIC', fontId: 'playfair', size: 27, letterSpacing: 0.14 },
+      bottom: { enabled: true, text: 'COUNTY OF EXAMPLE', fontId: 'playfair', size: 20, letterSpacing: 0.12 },
+      center: { enabled: true, lines: 'OFFICIAL\nSEAL', fontId: 'playfair', size: 34, lineHeight: 1.15 },
+      aging: 14,
+      sizeMm: { width: 45, height: 45 },
+    },
+  },
+  {
+    id: 'gear-certified',
+    nameEn: 'Gear Edge Seal',
+    nameZh: '齿轮边印章',
+    state: {
+      ...baseState(),
+      color: '#1a3a6b',
+      border: { style: 'double', width: 3.5 },
+      edge: 'gear',
+      top: { enabled: true, text: 'CERTIFIED TRUE COPY', fontId: 'oswald', size: 24, letterSpacing: 0.1 },
+      bottom: { enabled: true, text: 'REGISTRATION NO. 2026', fontId: 'oswald', size: 17, letterSpacing: 0.1 },
+      center: { enabled: true, lines: 'TRUE\nCOPY', fontId: 'oswald', size: 38, lineHeight: 1.1 },
+      aging: 12,
+      sizeMm: { width: 45, height: 45 },
+    },
+  },
+  {
+    id: 'qc-triangle',
+    nameEn: 'QC Triangle',
+    nameZh: '三角检验章',
+    state: {
+      ...baseState(),
+      shape: 'triangle',
+      color: '#1a7f37',
+      border: { style: 'single', width: 4 },
+      top: { enabled: true, text: 'QUALITY INSPECTED', fontId: 'oswald', size: 18, letterSpacing: 0.08 },
+      bottom: { enabled: true, text: 'BATCH NO. 0000', fontId: 'oswald', size: 18, letterSpacing: 0.08 },
+      center: { enabled: true, lines: 'QC\nPASSED', fontId: 'oswald', size: 34, lineHeight: 1.15 },
+      aging: 22,
+      sizeMm: { width: 45, height: 40 },
+    },
+  },
+  {
+    id: 'rope-library',
+    nameEn: 'Rope Edge Seal',
+    nameZh: '绳珠边印章',
+    state: {
+      ...baseState(),
+      color: '#6b21a8',
+      border: { style: 'single', width: 3.5 },
+      edge: 'rope',
+      top: { enabled: true, text: 'CITY LIBRARY', fontId: 'cinzel', size: 26, letterSpacing: 0.12 },
+      bottom: { enabled: true, text: 'PROPERTY OF', fontId: 'cinzel', size: 20, letterSpacing: 0.14 },
+      center: { enabled: true, lines: 'LIBRARY\n★', fontId: 'cinzel', size: 36, lineHeight: 1.15 },
+      aging: 16,
+      sizeMm: { width: 42, height: 42 },
     },
   },
 ]

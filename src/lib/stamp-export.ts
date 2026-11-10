@@ -42,9 +42,8 @@ async function buildExportSvg(state: StampState, pixelSize?: number): Promise<st
   return svg
 }
 
-/** SVG 字符串 → 同尺寸 canvas（JPG 时先铺白底） */
-async function rasterize(state: StampState, pixelSize: number, mime: 'image/png' | 'image/jpeg'): Promise<Blob> {
-  const svg = await buildExportSvg(state, pixelSize)
+/** SVG 字符串 → 同尺寸 canvas（background 存在时先铺底色） */
+async function svgToCanvas(svg: string, size: number, background?: string): Promise<HTMLCanvasElement> {
   const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   try {
@@ -63,21 +62,35 @@ async function rasterize(state: StampState, pixelSize: number, mime: 'image/png'
       }
     }
     const canvas = document.createElement('canvas')
-    canvas.width = pixelSize
-    canvas.height = pixelSize
+    canvas.width = size
+    canvas.height = size
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('canvas 2d context unavailable')
-    if (mime === 'image/jpeg') {
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, pixelSize, pixelSize)
+    if (background) {
+      ctx.fillStyle = background
+      ctx.fillRect(0, 0, size, size)
     }
-    ctx.drawImage(img, 0, 0, pixelSize, pixelSize)
-    const out = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, mime, 0.92))
-    if (!out) throw new Error('canvas toBlob failed')
-    return out
+    ctx.drawImage(img, 0, 0, size, size)
+    return canvas
   } finally {
     URL.revokeObjectURL(url)
   }
+}
+
+/** 印章 → 透明底 canvas（TIFF 导出、照片盖章等复用），字体内嵌同导出管线 */
+export async function rasterizeToCanvas(state: StampState, pixelSize: number): Promise<HTMLCanvasElement> {
+  return svgToCanvas(await buildExportSvg(state, pixelSize), pixelSize)
+}
+
+async function rasterize(state: StampState, pixelSize: number, mime: 'image/png' | 'image/jpeg'): Promise<Blob> {
+  const canvas = await svgToCanvas(
+    await buildExportSvg(state, pixelSize),
+    pixelSize,
+    mime === 'image/jpeg' ? '#ffffff' : undefined,
+  )
+  const out = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, mime, 0.92))
+  if (!out) throw new Error('canvas toBlob failed')
+  return out
 }
 
 export async function exportSVG(state: StampState) {
@@ -152,6 +165,46 @@ async function svgToRasterBytes(svg: string, size: number, mime: 'image/png' | '
   }
 }
 
+export async function exportTIFF(state: StampState) {
+  const UTIF = (await import('utif')).default
+  const size = VIEWBOX.width * 10
+  const canvas = await rasterizeToCanvas(state, size)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('canvas 2d context unavailable')
+  const data = ctx.getImageData(0, 0, size, size)
+  const tiff = UTIF.encodeImage(data.data, size, size)
+  saveBlob(new Blob([tiff], { type: 'image/tiff' }), `stamp-${size}x${size}px.tiff`)
+}
+
+export async function exportDOCX(state: StampState) {
+  const { Document, Packer, Paragraph, ImageRun } = await import('docx')
+  const size = VIEWBOX.width * 3
+  const blob = await rasterize(state, size, 'image/png')
+  const pngBytes = new Uint8Array(await blob.arrayBuffer())
+  // docx transformation 单位是像素（96dpi）：mm → px，保持 Word 内显示为物理尺寸
+  const pxW = Math.round((state.sizeMm.width / 25.4) * 96)
+  const pxH = Math.round((state.sizeMm.height / 25.4) * 96)
+  const doc = new Document({
+    sections: [
+      {
+        children: [
+          new Paragraph({
+            children: [
+              new ImageRun({
+                type: 'png',
+                data: pngBytes,
+                transformation: { width: pxW, height: pxH },
+              }),
+            ],
+          }),
+        ],
+      },
+    ],
+  })
+  const out = await Packer.toBlob(doc)
+  saveBlob(out, `stamp-${state.sizeMm.width}x${state.sizeMm.height}mm.docx`)
+}
+
 export async function exportZIP(state: StampState) {
   const { default: JSZip } = await import('jszip')
   const zip = new JSZip()
@@ -161,6 +214,10 @@ export async function exportZIP(state: StampState) {
     zip.file(`stamp-${size}x${size}px.png`, await rasterize(state, size, 'image/png'))
   }
   zip.file(`stamp-${VIEWBOX.width * 3}x${VIEWBOX.width * 3}px.jpg`, await rasterize(state, VIEWBOX.width * 3, 'image/jpeg'))
+  zip.file('stamp.docx', await docxBytes(state))
+  // ZIP 里的 TIFF 用 3x：10x 的 raw RGBA（~62MB）几乎不可压缩会把包撑爆；
+  // 需要 10x 无损位图时 ZIP 里已有 PNG 4000px
+  zip.file(`stamp-${VIEWBOX.width * 3}x${VIEWBOX.width * 3}px.tiff`, await tiffBytes(state, VIEWBOX.width * 3))
 
   const { jsPDF } = await import('jspdf')
   const { width: wMm, height: hMm } = state.sizeMm
@@ -177,4 +234,38 @@ export async function exportZIP(state: StampState) {
 
   const blob = await zip.generateAsync({ type: 'blob' })
   saveBlob(blob, 'stamp-all-formats.zip')
+}
+
+/** TIFF 文件字节（RGBA 透明保留）；size 默认 10x，ZIP 里传 3x 控制体积 */
+async function tiffBytes(state: StampState, size: number = VIEWBOX.width * 10): Promise<Uint8Array> {
+  const UTIF = (await import('utif')).default
+  const canvas = await rasterizeToCanvas(state, size)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('canvas 2d context unavailable')
+  const data = ctx.getImageData(0, 0, size, size)
+  return new Uint8Array(UTIF.encodeImage(data.data, size, size))
+}
+
+/** DOCX 文件字节（ZIP 复用） */
+async function docxBytes(state: StampState): Promise<Uint8Array> {
+  const { Document, Packer, Paragraph, ImageRun } = await import('docx')
+  const size = VIEWBOX.width * 3
+  const blob = await rasterize(state, size, 'image/png')
+  const pngBytes = new Uint8Array(await blob.arrayBuffer())
+  const pxW = Math.round((state.sizeMm.width / 25.4) * 96)
+  const pxH = Math.round((state.sizeMm.height / 25.4) * 96)
+  const doc = new Document({
+    sections: [
+      {
+        children: [
+          new Paragraph({
+            children: [
+              new ImageRun({ type: 'png', data: pngBytes, transformation: { width: pxW, height: pxH } }),
+            ],
+          }),
+        ],
+      },
+    ],
+  })
+  return new Uint8Array(await Packer.toBuffer(doc))
 }

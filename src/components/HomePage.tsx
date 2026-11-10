@@ -203,6 +203,14 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         iconClass: 'text-red-600',
       },
       {
+        title: '照片盖章',
+        description: '把印章盖到照片上，印泥混合模式仿真，原图分辨率导出。',
+        href: '/zh/photo-stamp',
+        icon: Stamp,
+        chipClass: 'bg-orange-100',
+        iconClass: 'text-orange-600',
+      },
+      {
         title: '视频截帧',
         description: '在浏览器中从视频逐帧截取画面，支持单张或批量。',
         href: '/zh/video-frame',
@@ -385,6 +393,15 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         icon: StampIcon,
         chipClass: 'bg-red-100',
         iconClass: 'text-red-600',
+      },
+      {
+        title: 'Photo Stamp',
+        description:
+          'Place your stamp on any photo with a realistic ink blend. Drag to position, export full-res.',
+        href: '/photo-stamp',
+        icon: Stamp,
+        chipClass: 'bg-orange-100',
+        iconClass: 'text-orange-600',
       },
       {
         title: 'Video Frame Extractor',

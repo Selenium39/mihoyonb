@@ -42,6 +42,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { name: '拼豆图纸', href: '/zh/pindou', description: '照片转可打印图纸', icon: Palette },
       { name: '二维码生成', href: '/zh/qr-code', description: '自定义样式导出', icon: QrCode },
       { name: '印章生成', href: '/zh/stamp-maker', description: '弧形文字做旧导出', icon: StampIcon },
+      { name: '照片盖章', href: '/zh/photo-stamp', description: '印章盖到照片上', icon: Stamp },
     ],
   },
   {

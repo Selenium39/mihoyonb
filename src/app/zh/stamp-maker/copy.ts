@@ -31,9 +31,13 @@ export interface StampMakerCopy {
     circle: string
     ellipse: string
     rect: string
+    triangle: string
     borderStyle: string
     borderWidth: string
     styles: Record<string, string>
+    edge: string
+    edgeHint: string
+    edges: Record<string, string>
   }
   textSections: {
     cardTitle: string
@@ -49,6 +53,14 @@ export interface StampMakerCopy {
     letterSpacing: string
     lineHeight: string
     symbols: string
+  }
+  icon: {
+    cardTitle: string
+    upload: string
+    remove: string
+    scale: string
+    hint: string
+    onlyWith?: string
   }
   appearance: {
     cardTitle: string
@@ -73,6 +85,8 @@ export interface StampMakerCopy {
     jpg: string
     svg: string
     pdf: string
+    tiff: string
+    docx: string
     zip: string
     busy: string
   }
@@ -111,6 +125,7 @@ const zh: StampMakerCopy = {
     circle: '圆形',
     ellipse: '椭圆',
     rect: '矩形',
+    triangle: '三角',
     borderStyle: '边框样式',
     borderWidth: '边框粗细',
     styles: {
@@ -119,6 +134,15 @@ const zh: StampMakerCopy = {
       triple: '三线',
       dashed: '虚线',
       dotted: '点线',
+    },
+    edge: '装饰边',
+    edgeHint: '仅圆形支持：扇贝、光芒、齿轮、绳珠等经典封边。',
+    edges: {
+      none: '无',
+      scalloped: '扇贝边',
+      sunburst: '光芒边',
+      gear: '齿轮边',
+      rope: '绳珠边',
     },
   },
   textSections: {
@@ -135,6 +159,13 @@ const zh: StampMakerCopy = {
     letterSpacing: '字距',
     lineHeight: '行距',
     symbols: '插入符号',
+  },
+  icon: {
+    cardTitle: '中心图标',
+    upload: '上传图标（SVG / PNG）',
+    remove: '移除',
+    scale: '图标大小',
+    hint: '图标与中央文字共存时自动上下排布，原图颜色保留。',
   },
   appearance: {
     cardTitle: '外观',
@@ -159,6 +190,8 @@ const zh: StampMakerCopy = {
     jpg: 'JPG（白底）',
     svg: 'SVG 矢量',
     pdf: 'PDF（按毫米）',
+    tiff: 'TIFF 无损',
+    docx: 'Word 文档',
     zip: '全部格式打包',
     busy: '正在生成…',
   },
@@ -235,6 +268,7 @@ const en: StampMakerCopy = {
     circle: 'Round',
     ellipse: 'Oval',
     rect: 'Rect',
+    triangle: 'Triangle',
     borderStyle: 'Border style',
     borderWidth: 'Border width',
     styles: {
@@ -243,6 +277,15 @@ const en: StampMakerCopy = {
       triple: 'Triple line',
       dashed: 'Dashed',
       dotted: 'Dotted',
+    },
+    edge: 'Decorative edge',
+    edgeHint: 'Round stamps only: scalloped, sunburst, gear and rope edges.',
+    edges: {
+      none: 'None',
+      scalloped: 'Scalloped',
+      sunburst: 'Sunburst',
+      gear: 'Gear',
+      rope: 'Rope',
     },
   },
   textSections: {
@@ -259,6 +302,13 @@ const en: StampMakerCopy = {
     letterSpacing: 'Letter spacing',
     lineHeight: 'Line height',
     symbols: 'Insert symbol',
+  },
+  icon: {
+    cardTitle: 'Center icon',
+    upload: 'Upload icon (SVG / PNG)',
+    remove: 'Remove',
+    scale: 'Icon size',
+    hint: 'The icon stacks above center text automatically; original colors are kept.',
   },
   appearance: {
     cardTitle: 'Appearance',
@@ -283,6 +333,8 @@ const en: StampMakerCopy = {
     jpg: 'JPG (white bg)',
     svg: 'SVG vector',
     pdf: 'PDF (mm-sized)',
+    tiff: 'TIFF lossless',
+    docx: 'Word document',
     zip: 'All formats (ZIP)',
     busy: 'Generating…',
   },

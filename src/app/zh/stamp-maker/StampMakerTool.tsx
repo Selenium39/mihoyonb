@@ -31,6 +31,7 @@ import {
   Circle as CircleIcon,
   RectangleHorizontal,
   Square,
+  Triangle as TriangleIcon,
   Download,
   FileText,
   FileImage,
@@ -39,6 +40,8 @@ import {
   Undo2,
   RotateCcw,
   AlertCircle,
+  Upload,
+  X,
 } from 'lucide-react'
 import {
   STAMP_FONTS,
@@ -48,11 +51,12 @@ import {
   renderStampSVG,
   type ArcText,
   type BorderStyle,
+  type StampEdge,
   type StampShape,
   type StampState,
 } from '@/lib/stamp-maker'
 import { stampFontCssUrl } from '@/lib/stamp-fonts'
-import { exportJPG, exportPDF, exportPNG, exportSVG, exportZIP } from '@/lib/stamp-export'
+import { exportDOCX, exportJPG, exportPDF, exportPNG, exportSVG, exportTIFF, exportZIP } from '@/lib/stamp-export'
 import { trackToolExport } from '@/lib/analytics'
 import { type Locale } from '@/lib/i18n'
 import { getStampMakerCopy } from './copy'
@@ -205,10 +209,27 @@ export default function StampMakerTool({ locale }: StampMakerToolProps) {
     })
   }
 
+  const iconInputRef = useRef<HTMLInputElement>(null)
+  const onIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const src = String(reader.result)
+      update((d) => {
+        d.icon = { enabled: true, src, scale: d.icon.scale || 0.5 }
+      })
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
   const setShape = (shape: StampShape) => {
     update((draft) => {
       draft.shape = shape
       if (shape === 'circle') draft.sizeMm.height = draft.sizeMm.width
+      // 非圆形关闭装饰边（渲染时也会忽略，这里保持状态干净）
+      if (shape !== 'circle') draft.edge = 'none'
     })
   }
 
@@ -337,6 +358,12 @@ export default function StampMakerTool({ locale }: StampMakerToolProps) {
                 <Button variant="outline" size="sm" disabled={busy !== null} onClick={() => runExport('pdf', () => exportPDF(state))}>
                   <FileText className="w-4 h-4 mr-1" /> {copy.exportSection.pdf}
                 </Button>
+                <Button variant="outline" size="sm" disabled={busy !== null} onClick={() => runExport('tiff', () => exportTIFF(state))}>
+                  <FileImage className="w-4 h-4 mr-1" /> {copy.exportSection.tiff}
+                </Button>
+                <Button variant="outline" size="sm" disabled={busy !== null} onClick={() => runExport('docx', () => exportDOCX(state))}>
+                  <FileText className="w-4 h-4 mr-1" /> {copy.exportSection.docx}
+                </Button>
                 <Button disabled={busy !== null} onClick={() => runExport('zip', () => exportZIP(state))}>
                   <FileArchive className="w-4 h-4 mr-1" />
                   {busy === 'zip' ? copy.exportSection.busy : copy.exportSection.zip}
@@ -380,6 +407,7 @@ export default function StampMakerTool({ locale }: StampMakerToolProps) {
                     ['circle', CircleIcon, copy.shape.circle],
                     ['ellipse', RectangleHorizontal, copy.shape.ellipse],
                     ['rect', Square, copy.shape.rect],
+                    ['triangle', TriangleIcon, copy.shape.triangle],
                   ] as const
                 ).map(([shape, Icon, label]) => (
                   <Button
@@ -410,6 +438,27 @@ export default function StampMakerTool({ locale }: StampMakerToolProps) {
                   </SelectContent>
                 </Select>
               </div>
+              {state.shape === 'circle' && (
+                <div className="space-y-1.5">
+                  <Label>{copy.shape.edge}</Label>
+                  <Select
+                    value={state.edge}
+                    onValueChange={(v) => update((d) => (d.edge = v as StampEdge))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(copy.shape.edges) as StampEdge[]).map((e) => (
+                        <SelectItem key={e} value={e}>
+                          {copy.shape.edges[e]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">{copy.shape.edgeHint}</p>
+                </div>
+              )}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label>{copy.shape.borderWidth}</Label>
@@ -517,6 +566,55 @@ export default function StampMakerTool({ locale }: StampMakerToolProps) {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">{copy.icon.cardTitle}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => iconInputRef.current?.click()}>
+                  <Upload className="w-4 h-4 mr-1" /> {copy.icon.upload}
+                </Button>
+                {state.icon.enabled && state.icon.src && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      update((d) => {
+                        d.icon = { enabled: false, src: null, scale: d.icon.scale }
+                      })
+                    }
+                  >
+                    <X className="w-4 h-4 mr-1" /> {copy.icon.remove}
+                  </Button>
+                )}
+                <input
+                  ref={iconInputRef}
+                  type="file"
+                  accept="image/png,image/svg+xml,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={onIconUpload}
+                />
+              </div>
+              {state.icon.enabled && state.icon.src && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label>{copy.icon.scale}</Label>
+                    <span className="text-xs text-muted-foreground">{Math.round(state.icon.scale * 100)}%</span>
+                  </div>
+                  <Slider
+                    min={0.15}
+                    max={0.9}
+                    step={0.01}
+                    value={[state.icon.scale]}
+                    onValueChange={([v]) => update((d) => (d.icon.scale = v), true)}
+                  />
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">{copy.icon.hint}</p>
             </CardContent>
           </Card>
 
