@@ -18,6 +18,7 @@ mihoyonb（原牛）是一个开源的纯前端工具集，覆盖图片、视频
 | 图片加水印 | `/image-watermark` | `/zh/image-watermark` | 批量添加文字或 Logo 水印，支持位置、透明度、旋转和平铺。 |
 | 尺寸适配 | `/social-resize` | `/zh/social-resize` | 一键适配多个平台尺寸，支持居中裁切、完整保留和自定义宽高；中英文版使用各自市场的平台预设。 |
 | 敏感词检测 | `/sensitive-words` | `/zh/sensitive-words` | 检测广告文案中的高风险表述，高亮标注并支持一键遮罩；中英文版使用各自市场的词库。 |
+| AI 水印检测 | `/ai-watermark-checker` | `/zh/ai-watermark-checker` | 检查粘贴文本中的隐藏字符（零宽空格、窄空格、弯引号），并复制干净纯文本。全部在浏览器本地完成。 |
 | Markdown 转图片 | `/markdown-to-image` | `/zh/markdown-to-image` | 把 Markdown 渲染成可分享的 PNG，支持实时预览和自定义主题。 |
 | 二维码生成 | `/qr-code` | `/zh/qr-code` | 自定义颜色、中心 Logo 和透明背景，导出高清二维码。 |
 | 视频截帧 | `/video-frame` | `/zh/video-frame` | 在浏览器中逐帧截取视频画面，支持快捷键和单张/批量导出。 |
@@ -85,6 +86,7 @@ src/
 │   ├── image-watermark/
 │   ├── social-resize/
 │   ├── sensitive-words/
+│   ├── ai-watermark-checker/
 │   ├── markdown-to-image/
 │   ├── qr-code/
 │   ├── video-frame/
@@ -117,6 +119,7 @@ src/
 │   ├── image-watermark.ts
 │   ├── markdown-poster.ts
 │   ├── sensitive-words.ts
+│   ├── ai-watermark.ts
 │   ├── sensitive-words-en.ts
 │   ├── subtitle.ts
 │   └── ...

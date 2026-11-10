@@ -22,6 +22,7 @@ export const TRANSLATED_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['/zh/subtitle-tools', '/subtitle-tools'],
   ['/zh/social-resize', '/social-resize'],
   ['/zh/sensitive-words', '/sensitive-words'],
+  ['/zh/ai-watermark-checker', '/ai-watermark-checker'],
   ['/zh/privacy', '/privacy'],
   ['/zh/terms', '/terms'],
 ]
