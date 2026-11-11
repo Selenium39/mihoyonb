@@ -222,7 +222,7 @@ export function cosineDistance(a: ArrayLike<number>, b: ArrayLike<number>): numb
 
 /**
  * 相邻采样的字形距离出现局部高峰时切开。
- * 高峰至少要离开中位数一段。新的一句要连着出现，孤立的一帧不当成新句。
+ * 高峰至少要离开中位数一段。新的一句至少要连着两帧，片尾单独的一帧也不算。
  */
 export function segmentBySignature(
   signatures: ArrayLike<number>[],
@@ -247,10 +247,9 @@ export function segmentBySignature(
       const origin = signatures[starts[starts.length - 1]]
       const left = cosineDistance(signatures[at], origin)
       if (left < cut) continue
-      if (at + 1 < count) {
-        const ahead = cosineDistance(signatures[at + 1], signatures[at])
-        if (ahead > left * 0.5) continue
-      }
+      if (at + 1 >= count) continue
+      const ahead = cosineDistance(signatures[at + 1], signatures[at])
+      if (ahead > left * 0.5) continue
       starts.push(at)
     }
   }

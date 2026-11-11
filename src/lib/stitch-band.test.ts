@@ -127,6 +127,10 @@ describe('edge band and line changes', () => {
     assert.equal(flickeredSegments.length, 2)
     assert.equal(flickeredSegments[0].start, 0)
     assert.ok(flickeredSegments[0].end >= 4)
+    const trailing = [axis(0), axis(0), axis(0), axis(0), axis(7)]
+    assert.equal(segmentBySignature(trailing, trailing.map(() => 1)).length, 1)
+    const trailingLine = [axis(0), axis(0), axis(0), axis(1), axis(1)]
+    assert.equal(segmentBySignature(trailingLine, trailingLine.map(() => 1)).length, 2)
     assert.ok(cosineDistance(axis(0), axis(1)) > 0.9)
     assert.ok(cosineDistance(axis(0), axis(0)) < 0.001)
   })

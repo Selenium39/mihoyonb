@@ -711,7 +711,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                     </Button>
                   )}
                   {frames.length > 0 && (
-                    <Button type="button" variant="ghost" size="sm" onClick={clearAll} disabled={busy || exporting}>
+                    <Button type="button" variant="ghost" size="sm" onClick={clearAll} disabled={exporting}>
                       {copy.list.clear}
                     </Button>
                   )}
