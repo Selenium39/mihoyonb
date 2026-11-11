@@ -14,6 +14,7 @@ mihoyonb（原牛）是一个开源的纯前端工具集，覆盖图片、视频
 | --- | --- | --- | --- |
 | 拼豆图纸生成器 | `/pindou` | `/zh/pindou` | 把照片转成可打印拼豆图纸，匹配 96 色参考色号，统计每种颜色用量，导出高清 PNG 图纸和 CSV 采购清单。 |
 | 图片拼接 | `/image-combine` | `/zh/image-combine` | 多种网格布局，把多张照片拼成一张图，可调间距、圆角和背景。 |
+| 截图拼接 | `/screenshot-stitch` | `/zh/screenshot-stitch` | 把多张截图或一段烧录字幕的视频拼成一张长图。变化的那一条在浏览器里量出来，文件不上传。 |
 | 长图切割 | `/image-split` | `/zh/image-split` | 按行列或 3×3 九宫格切图，支持批量 ZIP 下载。 |
 | 图片加水印 | `/image-watermark` | `/zh/image-watermark` | 批量添加文字或 Logo 水印，支持位置、透明度、旋转和平铺。 |
 | 尺寸适配 | `/social-resize` | `/zh/social-resize` | 一键适配多个平台尺寸，支持居中裁切、完整保留和自定义宽高；中英文版使用各自市场的平台预设。 |
@@ -82,6 +83,7 @@ src/
 │   ├── page.tsx             # 英文首页（默认，根路径）
 │   ├── pindou/              # 英文页面（根路径）
 │   ├── image-combine/
+│   ├── screenshot-stitch/
 │   ├── image-split/
 │   ├── image-watermark/
 │   ├── social-resize/
@@ -116,6 +118,9 @@ src/
 │   ├── bead-pattern.ts
 │   ├── bead-palette.ts
 │   ├── image-split.ts
+│   ├── stitch-band.ts
+│   ├── stitch-pixels.ts
+│   ├── stitch-plan.ts
 │   ├── image-watermark.ts
 │   ├── markdown-poster.ts
 │   ├── sensitive-words.ts

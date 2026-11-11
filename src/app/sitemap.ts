@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '', priority: 1, changeFrequency: 'daily' as const },
     { path: '/pindou', priority: 0.9, changeFrequency: 'weekly' as const },
     { path: '/image-combine', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/screenshot-stitch', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/image-split', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/image-watermark', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/social-resize', priority: 0.8, changeFrequency: 'weekly' as const },

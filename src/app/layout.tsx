@@ -21,9 +21,9 @@ const inter = Inter({ subsets: ['latin'] })
 
 const SITE_TITLE = 'mihoyonb — Free Browser-Based Tools for Creators'
 const SITE_DESCRIPTION =
-  'Free, privacy-first browser tools: Perler bead patterns, photo collage, image splitter, watermark, social media image resizer, sensitive word checker, Markdown to image, QR codes, subtitles and video frames. No uploads, no signup.'
+  'Free, privacy-first browser tools: Perler bead patterns, screenshot stitcher, photo collage, image splitter, watermark, social media image resizer, sensitive word checker, Markdown to image, QR codes, subtitles and video frames. No uploads, no signup.'
 const SITE_KEYWORDS =
-  'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, photo collage maker, image splitter, image watermark, social media image resizer, instagram image resizer, sensitive word checker, ad copy checker, markdown to image, qr code generator, subtitle converter, video frame extractor, privacy-first tools, no upload tools, no signup tools, client-side image tools'
+  'browser-based tools, free online tools, perler bead pattern generator, photo to bead pattern, screenshot stitcher, stitch screenshots, photo collage maker, image splitter, image watermark, social media image resizer, instagram image resizer, sensitive word checker, ad copy checker, markdown to image, qr code generator, subtitle converter, video frame extractor, privacy-first tools, no upload tools, no signup tools, client-side image tools'
 
 export const metadata: Metadata = {
   title: SITE_TITLE,
