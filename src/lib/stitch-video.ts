@@ -11,7 +11,9 @@ export function sampleCountForDuration(duration: number): number {
 /** 采样落在每段中点，避开片头片尾正好卡在 duration 上的空帧。 */
 export function sampleTimes(duration: number, count: number): number[] {
   if (count <= 0 || !Number.isFinite(duration) || duration <= 0) return []
-  const end = Math.max(0, duration - 0.04)
+  const interval = duration / count
+  const margin = Math.min(0.04, interval / 2)
+  const end = Math.max(0, duration - margin)
   const times: number[] = []
   for (let i = 0; i < count; i++) {
     times.push(Math.min(end, ((i + 0.5) / count) * duration))

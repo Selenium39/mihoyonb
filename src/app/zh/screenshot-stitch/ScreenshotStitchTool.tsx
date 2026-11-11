@@ -25,6 +25,8 @@ import {
   canvasToPng,
   drawStitch,
   grayThumb,
+  openStitch,
+  paintStitchRow,
   loadImageFile,
   openVideo,
   PROFILE_ROWS,
@@ -47,7 +49,8 @@ interface StitchFrame {
   name: string
   width: number
   height: number
-  bitmap: ImageBitmap | null
+  bitmap: CanvasImageSource | null
+  release: (() => void) | null
   thumbUrl: string
   included: boolean
   time: number | null
@@ -66,7 +69,7 @@ function classify(file: File): 'image' | 'video' | null {
 }
 
 function closeFrames(frames: readonly StitchFrame[]) {
-  for (const frame of frames) frame.bitmap?.close()
+  for (const frame of frames) frame.release?.()
 }
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -75,7 +78,7 @@ function downloadBlob(blob: Blob, filename: string) {
   link.href = url
   link.download = filename
   link.click()
-  URL.revokeObjectURL(url)
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 function fileStamp(): string {
@@ -93,6 +96,9 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
   const framesRef = useRef<StitchFrame[]>([])
   const sourceRef = useRef<SourceKind | null>(null)
   const addFilesRef = useRef<(files: File[]) => Promise<void>>(async () => {})
+  const busyRef = useRef(false)
+  const exportingRef = useRef(false)
+  const previewUrlRef = useRef<string | null>(null)
 
   const [frames, setFrames] = useState<StitchFrame[]>([])
   const [source, setSource] = useState<SourceKind | null>(null)
@@ -114,11 +120,28 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
   sourceRef.current = source
   addFilesRef.current = addFiles
 
+  function replacePreview(next: string | null) {
+    if (previewUrlRef.current && previewUrlRef.current !== next) URL.revokeObjectURL(previewUrlRef.current)
+    previewUrlRef.current = next
+    setPreviewUrl(next)
+  }
+
+  function markBusy(value: boolean) {
+    busyRef.current = value
+    setBusy(value)
+  }
+
+  function markExporting(value: boolean) {
+    exportingRef.current = value
+    setExporting(value)
+  }
+
   useEffect(() => {
     return () => {
       generationRef.current += 1
       closeFrames(framesRef.current)
       if (videoRef.current) releaseVideo(videoRef.current.video, videoRef.current.url)
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
     }
   }, [])
 
@@ -170,12 +193,15 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
     const appending = !replace && sourceRef.current === 'images'
     if (!appending) resetMedia(generation)
     else generationRef.current = generation
-    setBusy(true)
+    markBusy(true)
     const loaded: StitchFrame[] = []
     let failed = false
     const ordered = [...files].sort((a, b) => compareFileNames(a.name, b.name))
     for (let index = 0; index < ordered.length; index++) {
-      if (generationRef.current !== generation) return
+      if (generationRef.current !== generation) {
+        closeFrames(loaded)
+        return
+      }
       setStatus(copy.status.reading(index + 1, ordered.length))
       try {
         const image = await loadImageFile(ordered[index])
@@ -184,7 +210,8 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
           name: ordered[index].name || `image-${index + 1}`,
           width: image.width,
           height: image.height,
-          bitmap: image.bitmap,
+          bitmap: image.source,
+          release: image.release,
           thumbUrl: grayThumb(image.profile.gray, PROFILE_WIDTH, PROFILE_ROWS),
           included: true,
           time: null,
@@ -205,7 +232,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
     publishBand(detected, false)
     setSource('images')
     setFrames(next)
-    setBusy(false)
+    markBusy(false)
     trackToolUse('screenshot_stitch', 'add_images', { count: loaded.length })
     if (loaded.length === 0) setStatus(copy.status.readFailed)
     else if (detected && detected.confidence < 0.25) setStatus(copy.status.lowConfidence)
@@ -217,7 +244,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
   async function runVideo(file: File): Promise<number> {
     const generation = generationRef.current + 1
     resetMedia(generation)
-    setBusy(true)
+    markBusy(true)
     setStatus(copy.status.sampling(0, 1))
     try {
       const opened = await openVideo(file)
@@ -235,7 +262,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
       )
       if (generationRef.current !== generation) return 0
       if (samples.length === 0) {
-        setBusy(false)
+        markBusy(false)
         setStatus(copy.status.videoFailed)
         return 0
       }
@@ -255,6 +282,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
         width: opened.video.videoWidth || PROFILE_WIDTH,
         height: opened.video.videoHeight || PROFILE_ROWS,
         bitmap: null,
+        release: null,
         thumbUrl: grayThumb(sample.profile.gray, PROFILE_WIDTH, PROFILE_ROWS),
         included: picks.size > 0 ? picks.has(index) : index % 8 === 0,
         time: sample.time,
@@ -265,7 +293,6 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
       publishBand(detected, true)
       setSource('video')
       setFrames(next)
-      setBusy(false)
       trackToolUse('screenshot_stitch', 'sample_video', {
         samples: samples.length,
         lines: next.filter((frame) => frame.included).length,
@@ -276,30 +303,35 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
           ? copy.status.videoReady(next.filter((frame) => frame.included).length, samples.length)
           : copy.status.bandFallback,
       )
+      let missedFrame = false
       for (const frame of next) {
         if (!frame.included || frame.time == null) continue
         if (generationRef.current !== generation) return 0
         try {
           const shot = await snapshotVideo(opened.video, frame.time, 960)
           if (generationRef.current !== generation) {
-            shot.bitmap.close()
+            shot.release()
             return 0
           }
           setFrames((current) =>
-            current.map((item) =>
-              item.id === frame.id
-                ? { ...item, bitmap: shot.bitmap, width: shot.width, height: shot.height }
-                : item,
-            ),
+            current.map((item) => {
+              if (item.id !== frame.id) return item
+              item.release?.()
+              return { ...item, bitmap: shot.source, release: shot.release, width: shot.width, height: shot.height }
+            }),
           )
         } catch {
-          // 这一帧留缩略图，导出时再试一次
+          missedFrame = true
         }
+      }
+      if (generationRef.current === generation) {
+        markBusy(false)
+        if (missedFrame) setStatus(copy.status.frameFailed)
       }
       return next.filter((frame) => frame.included).length
     } catch {
       if (generationRef.current === generation) {
-        setBusy(false)
+        markBusy(false)
         setStatus(copy.status.videoFailed)
       }
       return 0
@@ -307,6 +339,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
   }
 
   async function addFiles(list: File[]) {
+    if (busyRef.current || exportingRef.current) return
     const images: File[] = []
     let video: File | null = null
     for (const file of list) {
@@ -357,18 +390,18 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
     try {
       const shot = await snapshotVideo(videoRef.current.video, frame.time, 960)
       if (generationRef.current !== generation) {
-        shot.bitmap.close()
+        shot.release()
         return
       }
       setFrames((current) =>
         current.map((item) => {
           if (item.id !== id) return item
-          item.bitmap?.close()
-          return { ...item, bitmap: shot.bitmap, width: shot.width, height: shot.height }
+          item.release?.()
+          return { ...item, bitmap: shot.source, release: shot.release, width: shot.width, height: shot.height }
         }),
       )
     } catch {
-      setStatus(copy.status.videoFailed)
+      setStatus(copy.status.frameFailed)
     }
   }
 
@@ -387,7 +420,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
   function removeFrame(id: string) {
     setFrames((current) => {
       const frame = current.find((item) => item.id === id)
-      frame?.bitmap?.close()
+      frame?.release?.()
       return current.filter((item) => item.id !== id)
     })
   }
@@ -399,7 +432,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
 
   function clearAll() {
     generationRef.current += 1
-    setBusy(false)
+    markBusy(false)
     closeFrames(framesRef.current)
     if (videoRef.current) {
       releaseVideo(videoRef.current.video, videoRef.current.url)
@@ -408,19 +441,13 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
     setFrames([])
     setSource(null)
     setStatus('')
-    setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current)
-      return null
-    })
+    replacePreview(null)
   }
 
   useEffect(() => {
     const included = frames.filter((frame) => frame.included && frame.bitmap)
     if (included.length === 0) {
-      setPreviewUrl((current) => {
-        if (current) URL.revokeObjectURL(current)
-        return null
-      })
+      replacePreview(null)
       return
     }
     let cancelled = false
@@ -433,7 +460,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
             height: frame.height,
             caption: showTime && frame.time != null ? formatTimestamp(frame.time) : null,
           }))
-          const { canvas } = drawStitch(visuals, {
+          const { canvas, plan } = drawStitch(visuals, {
             mode,
             band: clampBand(bandTop, bandHeight),
             targetWidth: 640,
@@ -441,13 +468,10 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
             keepFirstFull,
             maxPixels: 8_000_000,
           })
+          if (plan.width < 1 || plan.height < 1) return
           const blob = await canvasToPng(canvas)
           if (cancelled) return
-          const url = URL.createObjectURL(blob)
-          setPreviewUrl((current) => {
-            if (current) URL.revokeObjectURL(current)
-            return url
-          })
+          replacePreview(URL.createObjectURL(blob))
         } catch {
           // 预览失败时保留上一张，导出仍会再画一次
         }
@@ -465,59 +489,89 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
       setStatus(copy.status.nothingIncluded)
       return
     }
-    setExporting(true)
-    const temporary: ImageBitmap[] = []
+    if (exportingRef.current) return
+    const generation = generationRef.current
+    const opened = videoRef.current
+    markExporting(true)
     try {
-      const visuals: StitchVisual[] = []
-      for (const frame of included) {
-        if (frame.time != null && videoRef.current) {
-          const native = videoRef.current.video.videoWidth || frame.width
-          const wanted = (widthPreset === 'source' ? native : Number(widthPreset)) * exportScale
-          const shot = await snapshotVideo(videoRef.current.video, frame.time, Math.max(320, wanted))
-          temporary.push(shot.bitmap)
-          visuals.push({
-            source: shot.bitmap,
-            width: shot.width,
-            height: shot.height,
+      const specs = included.flatMap((frame) => {
+        if (frame.time != null && opened) {
+          const nativeW = opened.video.videoWidth || frame.width
+          const nativeH = opened.video.videoHeight || frame.height
+          const wanted = (widthPreset === 'source' ? nativeW : Number(widthPreset)) * exportScale
+          const fitted = Math.min(1, Math.max(320, wanted) / Math.max(1, nativeW))
+          return [{
+            frame,
+            width: Math.max(1, Math.round(nativeW * fitted)),
+            height: Math.max(1, Math.round(nativeH * fitted)),
             caption: showTime ? formatTimestamp(frame.time) : null,
-          })
-        } else if (frame.bitmap) {
-          visuals.push({
-            source: frame.bitmap,
-            width: frame.width,
-            height: frame.height,
-            caption: null,
-          })
+          }]
         }
-      }
-      if (visuals.length === 0) {
+        if (!frame.bitmap) return []
+        return [{ frame, width: frame.width, height: frame.height, caption: null }]
+      })
+      if (specs.length === 0) {
         setStatus(copy.status.nothingIncluded)
         return
       }
-      const { canvas, plan } = drawStitch(visuals, {
-        mode,
-        band: clampBand(bandTop, bandHeight),
-        targetWidth: widthPreset === 'source' ? 0 : Number(widthPreset),
-        scale: exportScale,
-        keepFirstFull,
-      })
+      const { canvas, plan } = openStitch(
+        specs.map((spec) => ({ width: spec.width, height: spec.height, caption: Boolean(spec.caption) })),
+        {
+          mode,
+          band: clampBand(bandTop, bandHeight),
+          targetWidth: widthPreset === 'source' ? 0 : Number(widthPreset),
+          scale: exportScale,
+          keepFirstFull,
+        },
+      )
+      const ctx = canvas.getContext('2d')
+      if (!ctx || plan.width < 1 || plan.height < 1) throw new Error('canvas-limit')
+      for (let index = 0; index < specs.length; index++) {
+        if (generationRef.current !== generation || videoRef.current !== opened) return
+        const spec = specs[index]
+        const row = plan.rows[index]
+        if (!spec || !row) continue
+        if (spec.frame.time != null && opened) {
+          const nativeW = opened.video.videoWidth || spec.frame.width
+          const wanted = (widthPreset === 'source' ? nativeW : Number(widthPreset)) * exportScale
+          const shot = await snapshotVideo(opened.video, spec.frame.time, Math.max(320, wanted))
+          try {
+            if (generationRef.current !== generation || videoRef.current !== opened) return
+            paintStitchRow(ctx, plan, row, {
+              source: shot.source,
+              width: shot.width,
+              height: shot.height,
+              caption: spec.caption,
+            })
+          } finally {
+            shot.release()
+          }
+        } else if (spec.frame.bitmap) {
+          paintStitchRow(ctx, plan, row, {
+            source: spec.frame.bitmap,
+            width: spec.width,
+            height: spec.height,
+            caption: spec.caption,
+          })
+        }
+      }
+      if (generationRef.current !== generation || videoRef.current !== opened) return
       const blob = await canvasToPng(canvas)
       downloadBlob(blob, `long-screenshot-${fileStamp()}.png`)
       trackToolExport('screenshot_stitch', 'png', {
         mode,
         scale: exportScale,
         width: widthPreset,
-        rows: visuals.length,
+        rows: specs.length,
         source: source ?? 'images',
         timestamps: showTime,
         capped: plan.capped,
       })
       setStatus(plan.capped ? copy.status.capped : copy.status.exported)
     } catch {
-      setStatus(copy.status.readFailed)
+      if (generationRef.current === generation) setStatus(copy.status.exportFailed)
     } finally {
-      temporary.forEach((bitmap) => bitmap.close())
-      setExporting(false)
+      markExporting(false)
     }
   }
 
@@ -537,7 +591,8 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
   }
 
   async function loadExample(kind: 'images' | 'video') {
-    setBusy(true)
+    if (busyRef.current || exportingRef.current) return
+    markBusy(true)
     try {
       if (kind === 'images') {
         const files = await makeExampleScreenshots()
@@ -551,7 +606,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
         if (lines > 0) setStatus(copy.status.exampleClip)
       }
     } catch {
-      setBusy(false)
+      markBusy(false)
       setStatus(copy.examples.failed)
     }
   }
@@ -603,6 +658,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                 <button
                   type="button"
                   className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-8 text-center transition-colors hover:border-violet-600/60 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  disabled={busy || exporting}
                   onClick={() => inputRef.current?.click()}
                   onDragOver={(event) => event.preventDefault()}
                   onDrop={(event) => {
@@ -620,6 +676,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                   ref={inputRef}
                   type="file"
                   className="sr-only"
+                  disabled={busy || exporting}
                   accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/quicktime,video/webm,image/*,video/*"
                   multiple
                   onChange={(event) => {
@@ -629,14 +686,14 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                   }}
                 />
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={busy}>
+                  <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={busy || exporting}>
                     {copy.drop.browse}
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => void loadExample('images')} disabled={busy}>
+                  <Button type="button" variant="outline" size="sm" onClick={() => void loadExample('images')} disabled={busy || exporting}>
                     <ImagePlus className="mr-1.5 h-4 w-4" />
                     {copy.examples.shots}
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => void loadExample('video')} disabled={busy}>
+                  <Button type="button" variant="outline" size="sm" onClick={() => void loadExample('video')} disabled={busy || exporting}>
                     <Film className="mr-1.5 h-4 w-4" />
                     {copy.examples.clip}
                   </Button>
@@ -649,12 +706,12 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                 <CardTitle className="text-base">{copy.list.title(frames.length, includedCount)}</CardTitle>
                 <div className="flex gap-2">
                   {source === 'images' && frames.length > 1 && (
-                    <Button type="button" variant="ghost" size="sm" onClick={sortByName}>
+                    <Button type="button" variant="ghost" size="sm" onClick={sortByName} disabled={busy || exporting}>
                       {copy.list.sort}
                     </Button>
                   )}
                   {frames.length > 0 && (
-                    <Button type="button" variant="ghost" size="sm" onClick={clearAll}>
+                    <Button type="button" variant="ghost" size="sm" onClick={clearAll} disabled={busy || exporting}>
                       {copy.list.clear}
                     </Button>
                   )}
@@ -671,7 +728,8 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                           type="checkbox"
                           className="h-4 w-4 shrink-0 accent-violet-700"
                           checked={frame.included}
-                          aria-label={copy.list.include}
+                          aria-label={`${copy.list.include}: ${frame.name}`}
+                          disabled={busy || exporting}
                           onChange={() => void toggleFrame(frame.id)}
                         />
                         {frame.thumbUrl ? (
@@ -684,13 +742,13 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                         </span>
                         {source === 'images' && (
                           <span className="flex shrink-0 gap-1">
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label={copy.list.moveUp} disabled={index === 0} onClick={() => moveFrame(frame.id, -1)}>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label={copy.list.moveUp} disabled={busy || exporting || index === 0} onClick={() => moveFrame(frame.id, -1)}>
                               <ArrowUp className="h-4 w-4" />
                             </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label={copy.list.moveDown} disabled={index === frames.length - 1} onClick={() => moveFrame(frame.id, 1)}>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label={copy.list.moveDown} disabled={busy || exporting || index === frames.length - 1} onClick={() => moveFrame(frame.id, 1)}>
                               <ArrowDown className="h-4 w-4" />
                             </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label={copy.list.remove} onClick={() => removeFrame(frame.id)}>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label={copy.list.remove} disabled={busy || exporting} onClick={() => removeFrame(frame.id)}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </span>
@@ -733,6 +791,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                     {copy.controls.top}
                     <Slider
                       className="mt-2"
+                      aria-label={copy.controls.top}
                       min={0}
                       max={98}
                       step={0.5}
@@ -749,6 +808,7 @@ export default function ScreenshotStitchTool({ locale }: { locale: Locale }) {
                     {copy.controls.height}
                     <Slider
                       className="mt-2"
+                      aria-label={copy.controls.height}
                       min={2}
                       max={100}
                       step={0.5}

@@ -66,6 +66,18 @@ describe('change band', () => {
 })
 
 describe('edge band and line changes', () => {
+  it('keeps both lines of a two-line caption', () => {
+    const rows = 180
+    const profile = new Float64Array(rows).fill(2)
+    for (let y = 140; y < 147; y++) profile[y] = 80
+    for (let y = 156; y < 163; y++) profile[y] = 70
+    const detected = detectEdgeBand([profile, profile, profile])
+    assert.ok(detected)
+    assert.ok(detected.band.top < 140 / rows)
+    assert.ok(detected.band.top + detected.band.height > 163 / rows)
+    assert.ok(detected.band.height < 0.3)
+  })
+
   it('finds a stable high-energy strip', () => {
     const rows = 180
     const quiet = new Float64Array(rows).fill(2)
@@ -100,6 +112,21 @@ describe('edge band and line changes', () => {
       segments.map((segment) => segment.pick),
       [1, 4, 7],
     )
+    const flickered = [
+      axis(0),
+      axis(0),
+      axis(0),
+      axis(7),
+      axis(0),
+      axis(0),
+      axis(1),
+      axis(1),
+      axis(1),
+    ]
+    const flickeredSegments = segmentBySignature(flickered, flickered.map(() => 1))
+    assert.equal(flickeredSegments.length, 2)
+    assert.equal(flickeredSegments[0].start, 0)
+    assert.ok(flickeredSegments[0].end >= 4)
     assert.ok(cosineDistance(axis(0), axis(1)) > 0.9)
     assert.ok(cosineDistance(axis(0), axis(0)) < 0.001)
   })
@@ -173,12 +200,44 @@ describe('stitch plan', () => {
     assert.ok(plan.height <= 4096)
     assert.ok(plan.width * plan.height <= 4_000_000)
   })
+
+  it('keeps shrinking until the canvas limit holds, and gives up when it cannot', () => {
+    const frames = Array.from({ length: 40 }, () => ({ width: 1000, height: 10, caption: true }))
+    const fitted = planStitch({
+      frames,
+      mode: 'full',
+      band: { top: 0, height: 1 },
+      targetWidth: 1000,
+      scale: 1,
+      maxEdge: 500,
+      maxPixels: 200_000,
+    })
+    assert.equal(fitted.capped, true)
+    assert.ok(fitted.width > 0)
+    assert.ok(fitted.width <= 500)
+    assert.ok(fitted.height <= 500)
+    assert.ok(fitted.width * fitted.height <= 200_000)
+
+    const impossible = planStitch({
+      frames: Array.from({ length: 1000 }, () => ({ width: 10, height: 10, caption: false })),
+      mode: 'full',
+      band: { top: 0, height: 1 },
+      targetWidth: 10,
+      scale: 1,
+      maxEdge: 100,
+      maxPixels: 10_000,
+    })
+    assert.equal(impossible.capped, true)
+    assert.equal(impossible.width, 0)
+    assert.equal(impossible.rows.length, 0)
+  })
 })
 
 describe('timestamps, names, and sample times', () => {
   it('formats a source time and sorts filenames numerically', () => {
     assert.equal(formatTimestamp(62.5), '1:02.50')
     assert.equal(formatTimestamp(1.2), '0:01.20')
+    assert.equal(formatTimestamp(59.999), '1:00.00')
     assert.ok(compareFileNames('shot-2.png', 'shot-10.png') < 0)
   })
 
@@ -191,6 +250,8 @@ describe('timestamps, names, and sample times', () => {
       times.map((time) => Number(time.toFixed(2))),
       [0.25, 0.75, 1.25, 1.75],
     )
+    const short = sampleTimes(0.12, 4)
+    assert.equal(new Set(short.map((time) => time.toFixed(4))).size, short.length)
   })
 
   it('averages a row of pixels and measures the horizontal edge', () => {

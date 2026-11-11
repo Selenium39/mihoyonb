@@ -4,7 +4,7 @@
  */
 
 import { rgbaToProfile, type RowProfile } from '@/lib/stitch-pixels'
-import { planStitch, type StitchPlan } from '@/lib/stitch-plan'
+import { planStitch, type PlanRow, type StitchPlan } from '@/lib/stitch-plan'
 import { MAX_VIDEO_SAMPLES, sampleCountForDuration, sampleTimes } from '@/lib/stitch-video'
 import type { Band } from '@/lib/stitch-band'
 
@@ -35,19 +35,72 @@ export async function profileFromSource(source: CanvasImageSource): Promise<RowP
 }
 
 export async function loadImageFile(file: File): Promise<{
-  bitmap: ImageBitmap
+  source: CanvasImageSource
   width: number
   height: number
   profile: RowProfile
+  release: () => void
 }> {
-  const bitmap = await createImageBitmap(file)
+  if (typeof createImageBitmap === 'function') {
+    let bitmap: ImageBitmap | null = null
+    try {
+      bitmap = await createImageBitmap(file)
+    } catch {
+      bitmap = null
+    }
+    if (bitmap) {
+      try {
+        const profile = await profileFromSource(bitmap)
+        const held = bitmap
+        return {
+          source: held,
+          width: held.width,
+          height: held.height,
+          profile,
+          release: () => held.close(),
+        }
+      } catch (error) {
+        bitmap.close()
+        throw error
+      }
+    }
+  }
+
+  const url = URL.createObjectURL(file)
   try {
-    const profile = await profileFromSource(bitmap)
-    return { bitmap, width: bitmap.width, height: bitmap.height, profile }
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => reject(new Error('image'))
+      img.src = url
+    })
+    const profile = await profileFromSource(image)
+    return {
+      source: image,
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      profile,
+      release: () => URL.revokeObjectURL(url),
+    }
   } catch (error) {
-    bitmap.close()
+    URL.revokeObjectURL(url)
     throw error
   }
+}
+
+function waitForPresentedFrame(video: HTMLVideoElement): Promise<void> {
+  return new Promise((resolve) => {
+    const rvfc = video.requestVideoFrameCallback?.bind(video)
+    if (typeof rvfc === 'function') {
+      const timer = window.setTimeout(resolve, 200)
+      rvfc(() => {
+        window.clearTimeout(timer)
+        resolve()
+      })
+      return
+    }
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()))
+  })
 }
 
 export function seekTo(video: HTMLVideoElement, time: number): Promise<void> {
@@ -186,7 +239,7 @@ async function sampleByPlayback(
         .then((profile) => {
           if (settled) return
           samples.push({ time, profile })
-          onProgress(samples.length, samples.length)
+          onProgress(samples.length, 0)
         })
         .catch(() => undefined)
     }
@@ -210,6 +263,7 @@ export async function sampleVideo(
     if (shouldAbort()) break
     try {
       await seekTo(video, times[i])
+      await waitForPresentedFrame(video)
       const profile = await profileFromSource(video)
       samples.push({ time: times[i], profile })
     } catch {
@@ -227,8 +281,9 @@ export async function snapshotVideo(
   video: HTMLVideoElement,
   time: number,
   maxWidth: number,
-): Promise<{ bitmap: ImageBitmap; width: number; height: number }> {
+): Promise<{ source: CanvasImageSource; width: number; height: number; release: () => void }> {
   await seekTo(video, time)
+  await waitForPresentedFrame(video)
   const sourceWidth = video.videoWidth || 1
   const sourceHeight = video.videoHeight || 1
   const scale = Math.min(1, maxWidth / sourceWidth)
@@ -240,8 +295,15 @@ export async function snapshotVideo(
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('canvas')
   ctx.drawImage(video, 0, 0, width, height)
-  const bitmap = await createImageBitmap(canvas)
-  return { bitmap, width, height }
+  if (typeof createImageBitmap === 'function') {
+    try {
+      const bitmap = await createImageBitmap(canvas)
+      return { source: bitmap, width, height, release: () => bitmap.close() }
+    } catch {
+      // 画布本身就能拿去画，不必再转一层
+    }
+  }
+  return { source: canvas, width, height, release: () => undefined }
 }
 
 export function grayThumb(gray: Uint8Array, width: number, height: number): string {
@@ -276,6 +338,63 @@ export function releaseVideo(video: HTMLVideoElement, url: string) {
   URL.revokeObjectURL(url)
 }
 
+export function openStitch(
+  frames: { width: number; height: number; caption: boolean }[],
+  options: {
+    mode: 'full' | 'band'
+    band: Band
+    targetWidth: number
+    scale: number
+    keepFirstFull: boolean
+    maxEdge?: number
+    maxPixels?: number
+  },
+): { canvas: HTMLCanvasElement; plan: StitchPlan } {
+  const plan = planStitch({
+    frames,
+    mode: options.mode,
+    band: options.band,
+    targetWidth: options.targetWidth,
+    scale: options.scale,
+    keepFirstFull: options.keepFirstFull,
+    maxEdge: options.maxEdge,
+    maxPixels: options.maxPixels,
+  })
+  const canvas = document.createElement('canvas')
+  if (plan.width < 1 || plan.height < 1) return { canvas, plan }
+  canvas.width = plan.width
+  canvas.height = plan.height
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
+    ctx.fillStyle = '#111111'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+  }
+  return { canvas, plan }
+}
+
+export function paintStitchRow(ctx: CanvasRenderingContext2D, plan: StitchPlan, row: PlanRow, visual: StitchVisual) {
+  ctx.drawImage(
+    visual.source,
+    0,
+    row.cropY,
+    visual.width,
+    row.cropHeight,
+    0,
+    row.destY,
+    plan.width,
+    row.destHeight,
+  )
+  if (row.captionHeight > 0 && visual.caption) {
+    ctx.fillStyle = '#111111'
+    ctx.fillRect(0, row.captionY, plan.width, row.captionHeight)
+    ctx.fillStyle = '#f4f4f5'
+    const fontSize = Math.max(1, Math.min(row.captionHeight, Math.round(row.captionHeight * 0.62)))
+    ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`
+    ctx.textBaseline = 'middle'
+    ctx.fillText(visual.caption, Math.round(plan.width * 0.02), row.captionY + row.captionHeight / 2)
+  }
+}
+
 export function drawStitch(
   visuals: StitchVisual[],
   options: {
@@ -288,51 +407,20 @@ export function drawStitch(
     maxPixels?: number
   },
 ): { canvas: HTMLCanvasElement; plan: StitchPlan } {
-  const plan = planStitch({
-    frames: visuals.map((visual) => ({
+  const { canvas, plan } = openStitch(
+    visuals.map((visual) => ({
       width: visual.width,
       height: visual.height,
       caption: Boolean(visual.caption),
     })),
-    mode: options.mode,
-    band: options.band,
-    targetWidth: options.targetWidth,
-    scale: options.scale,
-    keepFirstFull: options.keepFirstFull,
-    maxEdge: options.maxEdge,
-    maxPixels: options.maxPixels,
-  })
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.max(1, plan.width)
-  canvas.height = Math.max(1, plan.height)
+    options,
+  )
   const ctx = canvas.getContext('2d')
   if (!ctx || plan.rows.length === 0) return { canvas, plan }
-
-  ctx.fillStyle = '#111111'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
   for (const row of plan.rows) {
     const visual = visuals[row.index]
     if (!visual) continue
-    ctx.drawImage(
-      visual.source,
-      0,
-      row.cropY,
-      visual.width,
-      row.cropHeight,
-      0,
-      row.destY,
-      plan.width,
-      row.destHeight,
-    )
-    if (row.captionHeight > 0 && visual.caption) {
-      ctx.fillStyle = '#111111'
-      ctx.fillRect(0, row.captionY, plan.width, row.captionHeight)
-      ctx.fillStyle = '#f4f4f5'
-      const fontSize = Math.max(12, Math.round(row.captionHeight * 0.55))
-      ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`
-      ctx.textBaseline = 'middle'
-      ctx.fillText(visual.caption, Math.round(plan.width * 0.02), row.captionY + row.captionHeight / 2)
-    }
+    paintStitchRow(ctx, plan, row, visual)
   }
   return { canvas, plan }
 }

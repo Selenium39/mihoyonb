@@ -196,9 +196,11 @@ export function detectEdgeBand(edgeProfiles: ArrayLike<number>[]): BandDetection
   const rows = edgeProfiles[0]?.length ?? 0
   if (rows === 0 || edgeProfiles.some((profile) => profile.length !== rows)) return null
   const smoothed = smoothScores(medianProfile(edgeProfiles), 1)
+  // 两行字幕中间有一条空白。空隙并进来，才不会只留下其中一行。
+  const gapFraction = 0.08
   return (
-    bandFromScores(smoothed, { minFraction: 0.025, maxFraction: 0.42, padFraction: 0.01 }) ??
-    bandFromScores(smoothed, { minFraction: 0.025, maxFraction: 0.6, padFraction: 0.01 })
+    bandFromScores(smoothed, { minFraction: 0.025, maxFraction: 0.42, padFraction: 0.01, gapFraction }) ??
+    bandFromScores(smoothed, { minFraction: 0.025, maxFraction: 0.6, padFraction: 0.01, gapFraction })
   )
 }
 
@@ -220,7 +222,7 @@ export function cosineDistance(a: ArrayLike<number>, b: ArrayLike<number>): numb
 
 /**
  * 相邻采样的字形距离出现局部高峰时切开。
- * 高峰至少要离开中位数一段，并且两句之间至少隔一个采样，避免过渡帧被当成新的一句。
+ * 高峰至少要离开中位数一段。新的一句要连着出现，孤立的一帧不当成新句。
  */
 export function segmentBySignature(
   signatures: ArrayLike<number>[],
@@ -241,7 +243,15 @@ export function segmentBySignature(
     const next = i + 1 < distances.length ? distances[i + 1] : -1
     if (distances[i] >= cut && distances[i] >= prev && distances[i] >= next) {
       const at = i + 1
-      if (at - starts[starts.length - 1] >= 2) starts.push(at)
+      if (at - starts[starts.length - 1] < 2) continue
+      const origin = signatures[starts[starts.length - 1]]
+      const left = cosineDistance(signatures[at], origin)
+      if (left < cut) continue
+      if (at + 1 < count) {
+        const ahead = cosineDistance(signatures[at + 1], signatures[at])
+        if (ahead > left * 0.5) continue
+      }
+      starts.push(at)
     }
   }
 

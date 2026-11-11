@@ -44,6 +44,8 @@ export interface PlanInput {
   keepFirstFull?: boolean
   maxEdge?: number
   maxPixels?: number
+  /** 时间条的最小高度。压画布时可以降到 1，否则字号会把高度撑破上限。 */
+  captionFloor?: number
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -71,7 +73,8 @@ function build(frames: PlanFrame[], outWidth: number, input: PlanInput): { width
     if (cropY >= safeHeight) cropY = safeHeight - 1
     if (cropY + cropHeight > safeHeight) cropHeight = safeHeight - cropY
     const destHeight = Math.max(1, Math.round((cropHeight * outWidth) / safeWidth))
-    const captionHeight = frame.caption ? Math.max(18, Math.round(outWidth * 0.04)) : 0
+    const floor = Math.max(1, input.captionFloor ?? 18)
+    const captionHeight = frame.caption ? Math.max(floor, Math.round(outWidth * 0.04)) : 0
     rows.push({
       index,
       cropY,
@@ -104,18 +107,32 @@ export function planStitch(input: PlanInput): StitchPlan {
   const edgeFit = Math.min(maxEdge / plan.width, maxEdge / Math.max(1, plan.height))
   const pixelFit = Math.sqrt(maxPixels / Math.max(1, plan.width * plan.height))
   let outWidth = Math.max(1, Math.floor(plan.width * Math.min(edgeFit, pixelFit) * 0.98))
-  plan = build(input.frames, outWidth, input)
+  let captionFloor = input.captionFloor ?? 18
+  plan = build(input.frames, outWidth, { ...input, captionFloor })
+  let guard = 0
+  while (overflows() && guard < 40) {
+    const previousHeight = plan.height
+    if (outWidth > 1) outWidth = Math.max(1, Math.floor(outWidth * 0.85))
+    plan = build(input.frames, outWidth, { ...input, captionFloor })
+    if (plan.height >= previousHeight && captionFloor > 1) {
+      captionFloor = Math.max(1, Math.floor(captionFloor / 2))
+      plan = build(input.frames, outWidth, { ...input, captionFloor })
+    } else if (plan.height >= previousHeight && outWidth <= 1) {
+      break
+    }
+    guard += 1
+  }
   if (overflows()) {
-    outWidth = Math.max(1, Math.floor(outWidth * 0.9))
-    plan = build(input.frames, outWidth, input)
+    return { width: 0, height: 0, scale: input.scale, rows: [], capped: true }
   }
   return { ...plan, scale: input.scale, capped: true }
 }
 
 export function formatTimestamp(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00.00'
-  const minutes = Math.floor(seconds / 60)
-  const remain = seconds - minutes * 60
+  const centiseconds = Math.round(seconds * 100)
+  const minutes = Math.floor(centiseconds / 6000)
+  const remain = (centiseconds % 6000) / 100
   return `${minutes}:${remain.toFixed(2).padStart(5, '0')}`
 }
 

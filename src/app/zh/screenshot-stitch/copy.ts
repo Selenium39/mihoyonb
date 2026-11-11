@@ -61,6 +61,8 @@ export interface ScreenshotStitchCopy {
     lowConfidence: string
     needShots: string
     readFailed: string
+    exportFailed: string
+    frameFailed: string
     videoFailed: string
     videoIgnoredImages: string
     nothingIncluded: string
@@ -151,7 +153,7 @@ const EN: ScreenshotStitchCopy = {
   },
   status: {
     reading: (done, total) => `Reading ${done} of ${total}…`,
-    sampling: (done, total) => `Sampling the video, ${done} of ${total}…`,
+    sampling: (done, total) => (total > 0 ? `Sampling the video, ${done} of ${total}…` : `Sampling the video… ${done} frames so far.`),
     imagesReady: (count) => `${count} screenshots ready. The strip is measured from the rows that changed.`,
     videoReady: (lines, samples) =>
       `${lines} caption changes kept from ${samples} samples. Untick a row to leave it out.`,
@@ -160,6 +162,8 @@ const EN: ScreenshotStitchCopy = {
     lowConfidence: 'The rows look similar from top to bottom. Nudge the strip, or switch to full frames.',
     needShots: 'Add two or more screenshots to measure a strip. One image is exported as it is.',
     readFailed: 'One of those files could not be read. The rest are still here.',
+    exportFailed: 'The long image could not be drawn. Try fewer rows, or 1× instead of 2×.',
+    frameFailed: 'One video frame could not be captured. The rest of the rows are still here.',
     videoFailed: 'This browser could not read that video. Try MP4 or WEBM, or export screenshots and drop those.',
     videoIgnoredImages: 'A video was in the drop, so the screenshots in the same drop were left out.',
     nothingIncluded: 'Tick at least one row before exporting.',
@@ -403,13 +407,15 @@ const ZH: ScreenshotStitchCopy = {
   },
   status: {
     reading: (done, total) => `正在读取 ${done} / ${total}…`,
-    sampling: (done, total) => `正在采样视频 ${done} / ${total}…`,
+    sampling: (done, total) => (total > 0 ? `正在采样视频 ${done} / ${total}…` : `正在采样视频，已取得 ${done} 帧…`),
     imagesReady: (count) => `已放入 ${count} 张截图。条带按变化的那些行量出。`,
     videoReady: (lines, samples) => `从 ${samples} 个采样里留下 ${lines} 处字幕变化。不想要的行可以取消勾选。`,
     bandFallback: '没有量出稳定的字幕带，所以先放在靠近底部的位置。这部片子的字幕若在别处，拖动滑块即可。',
     lowConfidence: '从上到下的行差不太多。可以拖动条带，或改成整幅堆叠。',
     needShots: '放进两张或更多截图才能量条带。只有一张时按原图导出。',
     readFailed: '有一个文件没能读出来，其余的已经留下。',
+    exportFailed: '这张长图画不出来。可以少留几行，或把 2× 改成 1×。',
+    frameFailed: '有一帧视频没能截下来，其余的行还在。',
     videoFailed: '这个浏览器读不了该视频。可以换 MP4 或 WEBM，或先截图再拖进来。',
     videoIgnoredImages: '这一批里有视频，所以同时拖进来的截图没有加入。',
     nothingIncluded: '导出前至少勾选一行。',
