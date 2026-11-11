@@ -6,6 +6,7 @@ import {
   FileText,
   Film,
   LayoutGrid,
+  AlignVerticalJustifyCenter,
   Palette,
   QrCode,
   Scaling,
@@ -82,7 +83,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
     hero: {
       title: '免费在线工具，文件不上传服务器',
       intro:
-        '原牛是一组完全在浏览器本地运行的创作工具：拼豆图纸、AI 水印检测、图片拼接、长图切割、加水印、尺寸适配、二维码、字幕与视频截帧，打开即用，无需安装。',
+        '原牛是一组完全在浏览器本地运行的创作工具：拼豆图纸、截图拼接、AI 水印检测、图片拼接、长图切割、加水印、尺寸适配、二维码、字幕与视频截帧，打开即用，无需安装。',
       badges: ['纯浏览器本地处理', '文件不上传服务器', '免费无限制'],
       primaryCta: '打开拼豆图纸生成器',
       secondaryCta: '浏览全部工具',
@@ -137,6 +138,14 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         icon: ScanSearch,
         chipClass: 'bg-cyan-100',
         iconClass: 'text-cyan-600',
+      },
+      {
+        title: '截图拼接',
+        description: '把聊天、网页或字幕截图接成一张长图，重复的那一条会量出来再去掉。',
+        href: '/zh/screenshot-stitch',
+        icon: AlignVerticalJustifyCenter,
+        chipClass: 'bg-violet-100',
+        iconClass: 'text-violet-700',
       },
       {
         title: '图片拼接',
@@ -252,7 +261,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         question: '还有哪些工具？',
         answer:
-          'AI 水印检测、图片拼接、长图切割、批量加水印、尺寸适配、敏感词检测、Markdown 转图片、二维码生成、字幕转换与视频截帧。所有工具都在浏览器本地运行，遵循同样的不上传、不注册原则。',
+          'AI 水印检测、截图拼接、图片拼接、长图切割、批量加水印、尺寸适配、敏感词检测、Markdown 转图片、二维码生成、字幕转换与视频截帧。所有工具都在浏览器本地运行，遵循同样的不上传、不注册原则。',
       },
     ],
     cta: {
@@ -267,7 +276,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
     hero: {
       title: 'Free browser-based tools that never upload your files',
       intro:
-        'mihoyonb is a growing collection of creative tools that run entirely in your browser. Start with the Perler bead pattern generator, check pasted text with the AI watermark checker, then split images, convert Markdown and clean up subtitles — all on your device.',
+        'mihoyonb is a growing collection of creative tools that run entirely in your browser. Start with the Perler bead pattern generator, stitch screenshots into one long image, check pasted text with the AI watermark checker, then split images, convert Markdown and clean up subtitles — all on your device.',
       badges: ['Runs 100% in your browser', 'Files never uploaded', 'Free, no signup'],
       primaryCta: 'Open the bead pattern generator',
       secondaryCta: 'Browse all tools',
@@ -324,6 +333,15 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         icon: ScanSearch,
         chipClass: 'bg-cyan-100',
         iconClass: 'text-cyan-600',
+      },
+      {
+        title: 'Screenshot Stitcher',
+        description:
+          'Join chat, page, or subtitle screenshots into one tall PNG. The repeated strip is measured for you.',
+        href: '/screenshot-stitch',
+        icon: AlignVerticalJustifyCenter,
+        chipClass: 'bg-violet-100',
+        iconClass: 'text-violet-700',
       },
       {
         title: 'Photo Collage',
@@ -448,7 +466,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         question: 'Which other tools are available?',
         answer:
-          'An AI watermark checker for hidden characters, a photo collage maker, image splitter, batch image watermark, social media image resizer, sensitive word checker, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
+          'An AI watermark checker for hidden characters, a screenshot stitcher, a photo collage maker, image splitter, batch image watermark, social media image resizer, sensitive word checker, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
       },
     ],
     cta: {

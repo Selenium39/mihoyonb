@@ -14,6 +14,7 @@ mihoyonb (原牛) is an open-source collection of client-side tools for images, 
 | --- | --- | --- | --- |
 | Perler Bead Pattern Generator | `/pindou` | `/zh/pindou` | Converts a photo into a printable bead pattern with a 96-color reference palette, per-color bead counts, a high-resolution PNG blueprint and a CSV shopping list. |
 | Photo Collage | `/image-combine` | `/zh/image-combine` | Combines multiple photos into one image with grid layouts, adjustable spacing, corner radius and background. |
+| Screenshot Stitcher | `/screenshot-stitch` | `/zh/screenshot-stitch` | Joins screenshots or a video with burned-in captions into one tall PNG. The strip that changes is measured in the browser, and nothing is uploaded. |
 | Image Splitter | `/image-split` | `/zh/image-split` | Splits long images into rows/columns or a 3×3 grid, with batch ZIP download. |
 | Image Watermark | `/image-watermark` | `/zh/image-watermark` | Adds text or logo watermarks in bulk, with position, opacity, rotation and tiling controls. |
 | Social Media Image Resizer | `/social-resize` | `/zh/social-resize` | Resizes one image for multiple platforms with cover/contain modes and custom dimensions. Chinese and English versions ship market-specific presets. |
@@ -82,6 +83,7 @@ src/
 │   ├── page.tsx             # English home (default, root path)
 │   ├── pindou/              # English routes at the root
 │   ├── image-combine/
+│   ├── screenshot-stitch/
 │   ├── image-split/
 │   ├── image-watermark/
 │   ├── social-resize/
@@ -116,6 +118,9 @@ src/
 │   ├── bead-pattern.ts
 │   ├── bead-palette.ts
 │   ├── image-split.ts
+│   ├── stitch-band.ts
+│   ├── stitch-pixels.ts
+│   ├── stitch-plan.ts
 │   ├── image-watermark.ts
 │   ├── markdown-poster.ts
 │   ├── sensitive-words.ts

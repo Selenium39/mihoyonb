@@ -2,6 +2,7 @@ import {
   Crop,
   FileText,
   Film,
+  AlignVerticalJustifyCenter,
   LayoutGrid,
   Palette,
   QrCode,
@@ -36,6 +37,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: '图片工具',
     tools: [
       { name: '图片拼接', href: '/zh/image-combine', description: '多图自由拼贴', icon: LayoutGrid },
+      { name: '截图拼接', href: '/zh/screenshot-stitch', description: '去掉重复的那一条', icon: AlignVerticalJustifyCenter },
       { name: '长图切割', href: '/zh/image-split', description: '切片与九宫格', icon: Scissors },
       { name: '图片加水印', href: '/zh/image-watermark', description: '批量文字/图片水印', icon: Stamp },
       { name: '尺寸适配', href: '/zh/social-resize', description: '一键适配平台规格', icon: Crop },

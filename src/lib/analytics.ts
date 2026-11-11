@@ -30,6 +30,7 @@ export type ToolId =
   | 'subtitle_tools'
   | 'sensitive_words'
   | 'ai_watermark_checker'
+  | 'screenshot_stitch'
 
 /** 核心处理动作完成（转换/切割/截帧/检测等），在动作成功后调用 */
 export function trackToolUse(tool: ToolId, action?: string, props?: UmamiProps) {
