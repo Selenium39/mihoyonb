@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/config/site'
 import { getLocaleFromPathname, type Locale } from '@/lib/i18n'
 import { OPEN_CONSENT_EVENT } from '@/lib/consent'
+import { PromoBar } from '@/components/PromoBar'
 
 type FooterLink = { href: string; label: string }
 
@@ -81,6 +82,8 @@ export function Footer({ locale: initialLocale }: { locale: Locale }) {
   return (
     <footer className="w-full border-t bg-gradient-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 md:py-12">
+        {/* 腾讯云 CPS 推广横条（中英文案/链接不同，见 config/promo.ts） */}
+        <PromoBar locale={locale} />
         {/* 移动端：垂直布局，桌面端：网格布局 */}
         <div className="flex flex-col space-y-8 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-8 lg:gap-12 md:space-y-0">
 
