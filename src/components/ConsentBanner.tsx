@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Cookie } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,7 +14,7 @@ import {
   writeConsent,
   type ConsentChoice,
 } from '@/lib/consent'
-import type { Locale } from '@/lib/i18n'
+import { getLocaleFromPathname, type Locale } from '@/lib/i18n'
 
 const COPY = {
   zh: {
@@ -36,13 +37,9 @@ const COPY = {
   },
 } as const
 
-export function ConsentBanner({
-  locale,
-  geoCountry,
-}: {
-  locale: Locale
-  geoCountry?: string | null
-}) {
+export function ConsentBanner() {
+  const pathname = usePathname()
+  const locale: Locale = getLocaleFromPathname(pathname || '/')
   const [visible, setVisible] = useState(false)
   const copy = COPY[locale] ?? COPY.zh
 
@@ -53,16 +50,32 @@ export function ConsentBanner({
       return
     }
 
-    const needsConsent = isConsentCountry(geoCountry) || clientNeedsConsent()
-    if (!needsConsent) {
-      // 非 EEA/UK/CH：直接授予，保持原有的个性化广告体验
-      writeConsent('granted')
-      applyConsent('granted')
-      return
-    }
+    let cancelled = false
+    // 静态托管下无请求头可读，国家码改从 Cloudflare 边缘端点取：
+    // /cdn-cgi/trace 返回纯文本，loc= 行即 ISO 国家码。1.5s 超时或不可用时
+    // 走 clientNeedsConsent() 的时区/语言兜底，与原 middleware 注入语义一致。
+    const geo = fetch('/cdn-cgi/trace')
+      .then((res) => res.text())
+      .then((text) => text.match(/^loc=(.+)$/m)?.[1] ?? null)
+      .catch(() => null)
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500))
 
-    setVisible(true)
-  }, [geoCountry])
+    Promise.race([geo, timeout]).then((country) => {
+      if (cancelled) return
+      const needsConsent = isConsentCountry(country) || clientNeedsConsent()
+      if (!needsConsent) {
+        // 非 EEA/UK/CH：直接授予，保持原有的个性化广告体验
+        writeConsent('granted')
+        applyConsent('granted')
+        return
+      }
+      setVisible(true)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     const open = () => setVisible(true)

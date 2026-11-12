@@ -1,0 +1,13 @@
+# Cloudflare Pages 重定向（迁自原 next.config.js redirects()）
+# 英文从 /en 迁到根路径：旧英文链接 301 到新的默认英文页
+/en / 301
+/en/* /:splat 301
+
+# 下线工具与旧路径收敛到首页
+/blog/* / 301
+/pan-search / 301
+/video-watermark / 301
+/subtitle-translate / 301
+/voice-to-text / 301
+/text-to-speech / 301
+/text-to-mindmap / 301

@@ -35,11 +35,10 @@ const HEADER_COPY = {
   },
 } as const
 
-export function Header({ locale: initialLocale }: { locale: Locale }) {
+export function Header() {
   const pathname = usePathname()
-  // 根布局是共享布局，客户端在中英文之间跳转时不会重新渲染，
-  // 所以以当前路由推导的语言为准，locale 属性只作为初始值兜底。
-  const locale: Locale = pathname ? getLocaleFromPathname(pathname) : initialLocale
+  // 以当前路由推导语言（静态导出下无请求头可读，无 props 兜底）。
+  const locale: Locale = getLocaleFromPathname(pathname || '/')
   const copy = HEADER_COPY[locale]
   const isEn = locale === 'en'
 

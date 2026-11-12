@@ -1,42 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  // 站内 next/image 仅用于小 logo，关闭服务端图片优化，
-  // standalone 运行时无需 sharp（否则 Next 14 生产模式强制要求）
+  // 纯静态导出，托管在 Cloudflare Pages（2026-11 自 standalone node server 迁移，
+  // 与姊妹站 gpxconverter / iloveepub 同架构）。全站无 API route、无 middleware，
+  // 工具全部客户端执行，「零上传」隐私主张由架构保证。
+  //
+  // 原 standalone 时代的 headers()/redirects() 与 force-dynamic 均已迁出：
+  // - 缓存分层 → public/_headers（Pages 内置 HTML 协商缓存替代原 force-dynamic 防缓存）
+  // - 301 矩阵 → public/_redirects（/en 前缀剥离 + 下线工具收敛）
+  output: 'export',
+  // 站内 next/image 仅用于小 logo，关闭图片优化（静态导出无优化服务）
   images: {
     unoptimized: true,
   },
-  // appDir is now stable in Next.js 14, no need for experimental flag
-  // 页面 HTML 禁止 CDN 长缓存（平台默认 s-maxage 一年会导致部署后长时间看到旧版）
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' }],
-      },
-      {
-        // 构建产物带内容哈希，可永久缓存
-        source: '/_next/static/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
-      },
-    ]
-  },
-  async redirects() {
-    return [
-      // 英文从 /en 迁到根路径；旧英文链接 301 到新的默认英文页
-      { source: '/en', destination: '/', statusCode: 301 },
-      { source: '/en/:path*', destination: '/:path*', statusCode: 301 },
-      { source: '/blog/:path*', destination: '/', statusCode: 301 },
-      { source: '/pan-search', destination: '/', statusCode: 301 },
-      { source: '/video-watermark', destination: '/', statusCode: 301 },
-      { source: '/subtitle-translate', destination: '/', statusCode: 301 },
-      { source: '/voice-to-text', destination: '/', statusCode: 301 },
-      { source: '/text-to-speech', destination: '/', statusCode: 301 },
-      { source: '/text-to-mindmap', destination: '/', statusCode: 301 },
-    ]
-  },
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

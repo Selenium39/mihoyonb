@@ -10,9 +10,9 @@ import { getLocaleFromPathname, type Locale } from '@/lib/i18n'
  * 不依赖 Cookie 同意；仅用户点击后才跳转第三方站点）。
  * 与 Footer 同一套语言判定逻辑：以当前路由为准，属性兜底。
  */
-export function PromoBar({ locale: initialLocale }: { locale: Locale }) {
+export function PromoBar() {
   const currentPathname = usePathname()
-  const locale: Locale = currentPathname ? getLocaleFromPathname(currentPathname) : initialLocale
+  const locale: Locale = getLocaleFromPathname(currentPathname || '/')
   const promo = CPS_PROMO[locale]
 
   return (

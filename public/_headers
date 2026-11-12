@@ -1,0 +1,20 @@
+# Cloudflare Pages 响应头（构建时随 public/ 进 out/）
+# ⚠️ _headers 是追加语义而非覆盖：全局与子规则的 Cache-Control 会拼串。
+# 全局只放安全头、不写 Cache-Control——Pages 对 HTML 内置协商缓存
+# （public, max-age=0, must-revalidate）正好替代原 standalone 时代
+# force-dynamic 的「部署即生效」防缓存意图，静态产物不会被 CDN 长缓存。
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600

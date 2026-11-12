@@ -73,11 +73,10 @@ const FOOTER_COPY = {
   },
 } as const
 
-export function Footer({ locale: initialLocale }: { locale: Locale }) {
+export function Footer() {
   const currentPathname = usePathname()
-  // 根布局是共享布局，客户端切换中英路由时不会重新渲染，
-  // 因此以当前路由为准计算语言，属性只作为初始值兜底。
-  const locale: Locale = currentPathname ? getLocaleFromPathname(currentPathname) : initialLocale
+  // 以当前路由推导语言（静态导出下无请求头可读，无 props 兜底）。
+  const locale: Locale = getLocaleFromPathname(currentPathname || '/')
   const copy = FOOTER_COPY[locale]
   const currentYear = new Date().getFullYear()
 
@@ -85,7 +84,7 @@ export function Footer({ locale: initialLocale }: { locale: Locale }) {
     <footer className="w-full border-t bg-gradient-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 md:py-12">
         {/* 腾讯云 CPS 推广横条（中英文案/链接不同，见 config/promo.ts） */}
-        <PromoBar locale={locale} />
+        <PromoBar />
         {/* 移动端：垂直布局，桌面端：网格布局 */}
         <div className="flex flex-col space-y-8 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-8 lg:gap-12 md:space-y-0">
 

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { headers } from 'next/headers'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -9,13 +8,7 @@ import { ConsentBanner } from '@/components/ConsentBanner'
 import { AdsScript } from '@/components/AdsScript'
 import { siteConfig } from '@/config/site'
 import { ADSENSE_CLIENT } from '@/config/ads'
-import { getLocaleFromPathname, hreflang } from '@/lib/i18n'
 import Script from 'next/script'
-
-// Next 14 静态页默认输出 s-maxage=31536000（一年），CDN 会长期缓存旧页面
-// 且部署后不自动失效；改为动态渲染让响应带 no-store，部署即刻生效。
-// 页面均为轻量静态组件，动态渲染开销可忽略。
-export const dynamic = 'force-dynamic'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -104,19 +97,16 @@ export const metadata: Metadata = {
     ],
   },
 }
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // 语言由 middleware 注入的 x-pathname 决定：/zh 前缀 -> zh，其余 -> en。
-  // 直接取不到时兜底为英文（默认语言）。
-  const pathname = headers().get('x-pathname') || '/'
-  const locale = getLocaleFromPathname(pathname)
-  const geoCountry = headers().get('x-geo-country')
-
   return (
-    <html lang={hreflang(locale)}>
+    // 静态导出下 layout 是全站共享的，lang 只能写死默认值；/zh 页面的
+    // html lang 由客户端组件 HtmlLangSync 按当前路由修正（SEO 语义由
+    // metadata 的 hreflang alternates 兜底）。
+    <html lang="en">
       <head>
         {/* 额外的SEO标签 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -131,13 +121,13 @@ export default async function RootLayout({
       </head>
       <body className={inter.className}>
         <HtmlLangSync />
-        <ConsentBanner locale={locale} geoCountry={geoCountry} />
+        <ConsentBanner />
         <div className="flex flex-col min-h-screen">
-          <Header locale={locale} />
+          <Header />
           <main className="flex-1">
             {children}
           </main>
-          <Footer locale={locale} />
+          <Footer />
         </div>
         
         {/* Umami Analytics（无 Cookie，不记录工具内容） */}

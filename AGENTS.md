@@ -27,5 +27,7 @@
 
 ## Git 约定
 
-- 本地开发分支 `dev`，部署分支 `master`（push master 触发 byos-deploy 自动部署）。
+- 本地开发分支 `dev`，部署分支 `master`（2026-11 起托管在 Cloudflare Pages：
+  push master 触发自动构建部署，dev 分支自动出预览域；静态导出 + `_headers`/`_redirects`，
+  与姊妹站 gpxconverter / iloveepub 同架构）。
 - 不要在未确认的情况下 push 共享分支；本地 commit 可以。
