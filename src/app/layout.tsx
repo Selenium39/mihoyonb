@@ -108,6 +108,15 @@ export default function RootLayout({
     // metadata 的 hreflang alternates 兜底）。
     <html lang="en">
       <head>
+        {/* pages.dev 跳转守卫（head 顶最早执行）：CF Pages 无法禁用自动分配的
+            *.pages.dev 子域，命中时注入 noindex 并立即跳回主域——统计归位
+            （Umami 按 hostname 记账）、收录归并。早于所有 defer/异步脚本。 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'if(location.hostname.endsWith(".pages.dev")){var m=document.createElement("meta");m.name="robots";m.content="noindex";document.head.appendChild(m);location.replace("https://mihoyonb.com"+location.pathname+location.search+location.hash)}',
+          }}
+        />
         {/* 额外的SEO标签 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
