@@ -1,5 +1,6 @@
 import {
   Crop,
+  EyeOff,
   FileText,
   Film,
   AlignVerticalJustifyCenter,
@@ -60,6 +61,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { name: '字幕工具', href: '/zh/subtitle-tools', description: 'SRT/VTT 处理', icon: Subtitles },
       { name: '敏感词检测', href: '/zh/sensitive-words', description: '违禁词高亮', icon: ShieldAlert },
       { name: 'AI 水印检测', href: '/zh/ai-watermark-checker', description: '隐藏字符与窄空格', icon: ScanSearch },
+      { name: '文本脱敏', href: '/zh/text-redactor', description: '姓名证件一键替换', icon: EyeOff },
     ],
   },
 ]

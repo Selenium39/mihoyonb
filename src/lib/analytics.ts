@@ -29,6 +29,7 @@ export type ToolId =
   | 'pindou'
   | 'subtitle_tools'
   | 'sensitive_words'
+  | 'text_redactor'
   | 'ai_watermark_checker'
   | 'screenshot_stitch'
 

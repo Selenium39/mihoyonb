@@ -3,6 +3,7 @@ import Link from 'next/link'
 import {
   ArrowRight,
   BadgeCheck,
+  EyeOff,
   FileText,
   Film,
   LayoutGrid,
@@ -140,6 +141,14 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         iconClass: 'text-cyan-600',
       },
       {
+        title: '文本脱敏',
+        description: '发给 AI 前把姓名、电话、证件号与密钥换成占位符，回复粘回来可还原。',
+        href: '/zh/text-redactor',
+        icon: EyeOff,
+        chipClass: 'bg-fuchsia-100',
+        iconClass: 'text-fuchsia-600',
+      },
+      {
         title: '截图拼接',
         description: '把聊天、网页或字幕截图接成一张长图，重复的那一条会量出来再去掉。',
         href: '/zh/screenshot-stitch',
@@ -261,7 +270,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         question: '还有哪些工具？',
         answer:
-          'AI 水印检测、截图拼接、图片拼接、长图切割、批量加水印、尺寸适配、敏感词检测、Markdown 转图片、二维码生成、字幕转换与视频截帧。所有工具都在浏览器本地运行，遵循同样的不上传、不注册原则。',
+          'AI 水印检测、文本脱敏、截图拼接、图片拼接、长图切割、批量加水印、尺寸适配、敏感词检测、Markdown 转图片、二维码生成、字幕转换与视频截帧。所有工具都在浏览器本地运行，遵循同样的不上传、不注册原则。',
       },
     ],
     cta: {
@@ -333,6 +342,15 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
         icon: ScanSearch,
         chipClass: 'bg-cyan-100',
         iconClass: 'text-cyan-600',
+      },
+      {
+        title: 'Text Redactor',
+        description:
+          'Swap names, phones, cards and API keys for placeholders before pasting text into AI, then restore.',
+        href: '/text-redactor',
+        icon: EyeOff,
+        chipClass: 'bg-fuchsia-100',
+        iconClass: 'text-fuchsia-600',
       },
       {
         title: 'Screenshot Stitcher',
@@ -466,7 +484,7 @@ const HOME_COPY: Record<Locale, HomeCopy> = {
       {
         question: 'Which other tools are available?',
         answer:
-          'An AI watermark checker for hidden characters, a screenshot stitcher, a photo collage maker, image splitter, batch image watermark, social media image resizer, sensitive word checker, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
+          'An AI watermark checker for hidden characters, a text redactor for PII, a screenshot stitcher, a photo collage maker, image splitter, batch image watermark, social media image resizer, sensitive word checker, Markdown to image converter, QR code generator, subtitle converter (SRT/VTT) and video frame extractor. All of them run locally in your browser and share the same no-upload, no-signup approach.',
       },
     ],
     cta: {

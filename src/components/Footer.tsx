@@ -35,6 +35,7 @@ const FOOTER_COPY = {
       { href: '/zh/markdown-to-image', label: 'Markdown转图片' },
       { href: '/zh/subtitle-tools', label: '字幕工具' },
       { href: '/zh/sensitive-words', label: '敏感词检测' },
+      { href: '/zh/text-redactor', label: '文本脱敏' },
     ] as FooterLink[],
     legalLinks: [
       { href: '/zh/terms', label: '服务条款' },
@@ -61,6 +62,7 @@ const FOOTER_COPY = {
       { href: '/image-watermark', label: 'Image Watermark' },
       { href: '/social-resize', label: 'Social Media Image Resizer' },
       { href: '/sensitive-words', label: 'Sensitive Word Checker' },
+      { href: '/text-redactor', label: 'Text Redactor' },
       { href: '/markdown-to-image', label: 'Markdown to Image' },
       { href: '/qr-code', label: 'QR Code Generator' },
       { href: '/subtitle-tools', label: 'Subtitle Converter' },
